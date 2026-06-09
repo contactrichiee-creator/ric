@@ -225,6 +225,70 @@ body::after {
 }
 .pos-day .cal-pnl { color: var(--success); }
 .neg-day .cal-pnl { color: var(--danger); }
+.cal-day.has-trades { cursor: pointer; }
+.cal-day.has-trades:active { opacity: 0.75; }
+
+/* ===== Day Modal ===== */
+.day-modal-bg {
+  display: none; position: fixed; inset: 0; z-index: 100;
+  background: rgba(0,0,0,0.72); backdrop-filter: blur(6px);
+  -webkit-backdrop-filter: blur(6px);
+  align-items: flex-end; justify-content: center;
+  padding: 0;
+}
+.day-modal-bg.open { display: flex; animation: dmBgIn 0.22s ease both; }
+@keyframes dmBgIn { from { opacity: 0; } to { opacity: 1; } }
+.day-modal {
+  width: 100%; max-width: 600px;
+  max-height: 82vh;
+  background: #080c18;
+  border: 1px solid rgba(59,130,246,0.18);
+  border-bottom: none;
+  border-radius: 22px 22px 0 0;
+  display: flex; flex-direction: column;
+  box-shadow: 0 -12px 60px rgba(0,0,0,0.70), 0 0 40px rgba(59,130,246,0.08);
+  animation: dmIn 0.28s cubic-bezier(0.22,1,0.36,1) both;
+}
+@keyframes dmIn { from { transform: translateY(100%); } to { transform: translateY(0); } }
+.day-modal-handle {
+  width: 36px; height: 4px; border-radius: 99px;
+  background: rgba(255,255,255,0.15);
+  margin: 12px auto 0;
+  flex-shrink: 0;
+}
+.day-modal-header {
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 14px 20px 12px;
+  border-bottom: 1px solid rgba(59,130,246,0.10);
+  flex-shrink: 0;
+}
+.day-modal-date {
+  font-size: 18px; font-weight: 800; letter-spacing: -0.025em;
+  background: linear-gradient(160deg,#fff 0%,#93C5FD 100%);
+  -webkit-background-clip: text; background-clip: text;
+  -webkit-text-fill-color: transparent;
+  filter: drop-shadow(0 0 8px rgba(96,165,250,0.40));
+}
+.day-modal-total {
+  font-size: 18px; font-weight: 800; letter-spacing: -0.02em;
+  font-variant-numeric: tabular-nums;
+}
+.day-modal-total.pos { color: var(--success); }
+.day-modal-total.neg { color: var(--danger); }
+.day-modal-close {
+  width: 30px; height: 30px; border-radius: 50%;
+  border: 1px solid rgba(255,255,255,0.10);
+  background: rgba(255,255,255,0.05);
+  color: var(--text-secondary); font-size: 16px; line-height: 1;
+  cursor: pointer; display: flex; align-items: center; justify-content: center;
+  flex-shrink: 0; margin-left: 12px;
+}
+.day-modal-close:hover { background: rgba(255,107,107,0.12); border-color: rgba(255,107,107,0.30); color: var(--danger); }
+.day-modal-body {
+  overflow-y: auto; padding: 16px 16px 32px;
+  overscroll-behavior: contain;
+  flex: 1;
+}
 
 .gm-ghost {
   padding: 11px 18px;
@@ -627,6 +691,23 @@ body::after {
 
 </div><!-- /.page -->
 
+<!-- Day detail modal -->
+<div class="day-modal-bg" id="dayModalBg">
+  <div class="day-modal" id="dayModal">
+    <div class="day-modal-handle"></div>
+    <div class="day-modal-header">
+      <div>
+        <div class="day-modal-date" id="dmDate"></div>
+      </div>
+      <div style="display:flex;align-items:center;gap:10px">
+        <div class="day-modal-total" id="dmTotal"></div>
+        <button class="day-modal-close" id="dmClose">×</button>
+      </div>
+    </div>
+    <div class="day-modal-body" id="dmBody"></div>
+  </div>
+</div>
+
 <script>
 (function () {
   'use strict';
@@ -736,14 +817,104 @@ body::after {
       if (has) {
         var abs = Math.abs(pnl);
         var sign = pnl < 0 ? '-$' : '$';
-        var fmt = abs >= 10000 ? sign + (abs/1000).toFixed(1) + 'k'
-                : abs >= 1000  ? sign + (abs/1000).toFixed(1) + 'k'
-                : sign + abs.toFixed(0);
+        var fmt = abs >= 1000 ? sign + (abs/1000).toFixed(1) + 'k' : sign + abs.toFixed(0);
         pnlHtml = '<div class="cal-pnl">' + fmt + '</div>';
+        cls += ' has-trades';
       }
-      html += '<div class="' + cls + '"><div class="cal-date-num">' + day + '</div>' + pnlHtml + '</div>';
+      var dateAttr = has ? ' data-date="' + key + '"' : '';
+      html += '<div class="' + cls + '"' + dateAttr + '><div class="cal-date-num">' + day + '</div>' + pnlHtml + '</div>';
     }
     gridEl.innerHTML = html;
+  }
+
+  // ── Day modal ─────────────────────────────────────────────────────────────
+  function openDayModal(dateKey) {
+    var trades  = loadTrades().filter(function (t) { return t.date === dateKey; });
+    var photos  = loadPhotos();
+    if (!trades.length) return;
+
+    var dayTotal = trades.reduce(function (s,t) { return s + (t.pnl||0); }, 0);
+
+    // Format date label nicely: "Monday, April 27"
+    var parts = dateKey.split('-');
+    var d = new Date(+parts[0], +parts[1]-1, +parts[2]);
+    var dayNames   = ['Sunday','Monday','Tuesday','Wednesday','Thursday','Friday','Saturday'];
+    var monthNames = ['January','February','March','April','May','June','July','August','September','October','November','December'];
+    document.getElementById('dmDate').textContent = dayNames[d.getDay()] + ', ' + monthNames[d.getMonth()] + ' ' + d.getDate();
+
+    var totEl = document.getElementById('dmTotal');
+    totEl.textContent = fmtPnl(dayTotal);
+    totEl.className = 'day-modal-total ' + (dayTotal > 0 ? 'pos' : dayTotal < 0 ? 'neg' : '');
+
+    // Build trade cards (reuse existing markup style)
+    var body = document.getElementById('dmBody');
+    body.innerHTML = '';
+    var sorted = trades.slice().sort(function (a,b) { return (b.time||'').localeCompare(a.time||''); });
+    sorted.forEach(function (trade) {
+      var pnl    = trade.pnl || 0;
+      var cls    = pnl > 0 ? 'trade-win' : pnl < 0 ? 'trade-loss' : 'trade-be';
+      var pnlCls = pnl > 0 ? 'pnl-pos'   : pnl < 0 ? 'pnl-neg'   : 'pnl-zero';
+      var tags = '';
+      if (trade.contracts > 1) tags += '<span class="trade-tag">' + trade.contracts + ' contracts</span>';
+      if (trade.setup)         tags += '<span class="trade-tag">' + trade.setup + '</span>';
+      if (trade.emotion)       tags += '<span class="trade-tag">' + emotionLabel(trade.emotion) + '</span>';
+      var tradePhotos = photos[trade.id] || [];
+      var photoHtml = '';
+      if (tradePhotos.length) {
+        photoHtml = '<div class="trade-photos">';
+        tradePhotos.forEach(function (src, i) {
+          photoHtml += '<img class="trade-photo dm-photo" src="' + src + '" data-idx="' + i + '" alt="">';
+        });
+        photoHtml += '</div>';
+      }
+      var div = document.createElement('div');
+      div.className  = 'trade-item ' + cls;
+      div.dataset.id = trade.id;
+      div.innerHTML =
+        '<div class="trade-top">' +
+          '<span class="trade-instrument">' + trade.instrument + '</span>' +
+          '<span class="trade-dir ' + trade.direction + '">' + trade.direction.toUpperCase() + '</span>' +
+          '<span class="trade-pnl ' + pnlCls + '">' + fmtPnl(pnl) + '</span>' +
+        '</div>' +
+        '<div class="trade-meta"><span>' + (trade.time || '') + '</span>' + tags + '</div>' +
+        (trade.notes ? '<div class="trade-notes">"' + trade.notes + '"</div>' : '') +
+        photoHtml +
+        '<div class="trade-actions">' +
+          '<button class="analyze-btn" data-id="' + trade.id + '" type="button">✦ Analyze</button>' +
+          '<button class="delete-btn"  data-id="' + trade.id + '" data-del="1" type="button" title="Delete">×</button>' +
+        '</div>' +
+        '<div class="analysis-result" id="dm-ar-' + trade.id + '"></div>';
+      if (trade.analysis) showAnalysis(div.querySelector('.analysis-result'), trade.analysis);
+      body.appendChild(div);
+    });
+
+    // Wire buttons inside modal
+    body.querySelectorAll('.analyze-btn').forEach(function (btn) {
+      btn.addEventListener('click', function () { handleAnalyze(btn.dataset.id, 'dm-ar-' + btn.dataset.id); });
+    });
+    body.querySelectorAll('[data-del]').forEach(function (btn) {
+      btn.addEventListener('click', function () {
+        var all = loadTrades();
+        saveTrades(all.filter(function (t) { return t.id !== btn.dataset.id; }));
+        var ph = loadPhotos(); delete ph[btn.dataset.id]; savePhotos(ph);
+        renderTrades(); renderStats(); renderCalendar();
+        // Refresh or close modal
+        var remaining = loadTrades().filter(function (t) { return t.date === dateKey; });
+        if (!remaining.length) closeDayModal();
+        else openDayModal(dateKey);
+      });
+    });
+    body.querySelectorAll('.dm-photo').forEach(function (img) {
+      img.addEventListener('click', function () { openLightbox(img.src); });
+    });
+
+    document.getElementById('dayModalBg').classList.add('open');
+    document.body.classList.add('topbar-modal-open');
+  }
+
+  function closeDayModal() {
+    document.getElementById('dayModalBg').classList.remove('open');
+    document.body.classList.remove('topbar-modal-open');
   }
 
   // ── Stats ────────────────────────────────────────────────────────────────
@@ -887,13 +1058,14 @@ body::after {
   });
 
   // ── AI Analysis ───────────────────────────────────────────────────────────
-  async function handleAnalyze(tradeId) {
+  async function handleAnalyze(tradeId, resultId) {
     const trades = loadTrades();
     const trade  = trades.find(function (t) { return t.id === tradeId; });
     if (!trade) return;
 
+    const rid      = resultId || ('ar-' + tradeId);
     const btn      = document.querySelector('.analyze-btn[data-id="' + tradeId + '"]');
-    const resultEl = document.getElementById('ar-' + tradeId);
+    const resultEl = document.getElementById(rid);
     if (!btn || !resultEl) return;
 
     if (!ANTHROPIC_API_KEY) {
@@ -1171,6 +1343,15 @@ body::after {
   document.getElementById('calNext').addEventListener('click', function () {
     _calMonth++; if (_calMonth > 11) { _calMonth = 0; _calYear++; }
     renderCalendar();
+  });
+
+  document.getElementById('calGrid').addEventListener('click', function (e) {
+    var cell = e.target.closest('.has-trades');
+    if (cell && cell.dataset.date) openDayModal(cell.dataset.date);
+  });
+  document.getElementById('dmClose').addEventListener('click', closeDayModal);
+  document.getElementById('dayModalBg').addEventListener('click', function (e) {
+    if (e.target === this) closeDayModal();
   });
 
   document.addEventListener('DOMContentLoaded', function () {
