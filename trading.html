@@ -106,7 +106,7 @@ body::after {
 /* ===== Stats ===== */
 .stat-grid {
   display: grid;
-  grid-template-columns: repeat(4, 1fr);
+  grid-template-columns: repeat(2, 1fr);
   gap: 8px;
 }
 .stat {
@@ -116,14 +116,14 @@ body::after {
   min-width: 0;
 }
 .stat-num {
-  font-size: clamp(13px, 3.2vw, 20px); font-weight: 700;
+  font-size: clamp(13px, 2.2vw, 18px); font-weight: 700;
   font-variant-numeric: tabular-nums;
   letter-spacing: -0.03em; color: var(--text-primary); line-height: 1.1;
   word-break: break-all;
 }
 .stat-num.pos { color: var(--success); }
 .stat-num.neg { color: var(--danger); }
-.stat-label { margin-top: 5px; font-size: clamp(8px, 2vw, 10px); font-weight: 600; letter-spacing: 0.06em; text-transform: uppercase; color: var(--text-tertiary); }
+.stat-label { margin-top: 5px; font-size: 9px; font-weight: 600; letter-spacing: 0.06em; text-transform: uppercase; color: var(--text-tertiary); }
 
 /* ===== Form ===== */
 .gm-input {
@@ -238,42 +238,28 @@ body::after {
 /* ===== Day Modal ===== */
 .day-modal-bg {
   display: none; position: fixed; inset: 0; z-index: 100;
-  background: rgba(0,0,0,0.72); backdrop-filter: blur(6px);
-  -webkit-backdrop-filter: blur(6px);
-  align-items: flex-end; justify-content: center;
-  padding: 0;
+  background: rgba(0,0,0,0.75); backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  align-items: center; justify-content: center;
+  padding: 20px;
 }
-.day-modal-bg.open { display: flex; animation: dmBgIn 0.22s ease both; }
+.day-modal-bg.open { display: flex; animation: dmBgIn 0.2s ease both; }
 @keyframes dmBgIn { from { opacity: 0; } to { opacity: 1; } }
 .day-modal {
-  width: 100%; max-width: 600px;
+  width: 100%; max-width: 520px;
   max-height: 82vh;
   background: #080c18;
-  border: 1px solid rgba(59,130,246,0.18);
-  border-bottom: none;
-  border-radius: 22px 22px 0 0;
+  border: 1px solid rgba(59,130,246,0.22);
+  border-radius: 22px;
   display: flex; flex-direction: column;
-  box-shadow: 0 -12px 60px rgba(0,0,0,0.70), 0 0 40px rgba(59,130,246,0.08);
-  animation: dmIn 0.28s cubic-bezier(0.22,1,0.36,1) both;
+  box-shadow: 0 32px 80px rgba(0,0,0,0.80), 0 0 60px rgba(59,130,246,0.10);
+  animation: dmPop 0.38s cubic-bezier(0.34,1.56,0.64,1) both;
 }
-@keyframes dmIn { from { transform: translateY(100%); } to { transform: translateY(0); } }
-@media (min-width: 680px) {
-  .day-modal-bg { align-items: center; padding: 24px; }
-  .day-modal {
-    border-radius: 20px; border-bottom: 1px solid rgba(59,130,246,0.18);
-    max-height: 78vh;
-    box-shadow: 0 24px 80px rgba(0,0,0,0.70), 0 0 60px rgba(59,130,246,0.12);
-    animation: dmInCenter 0.28s cubic-bezier(0.22,1,0.36,1) both;
-  }
-  @keyframes dmInCenter { from { opacity:0; transform: scale(0.94) translateY(12px); } to { opacity:1; transform: scale(1) translateY(0); } }
-  .day-modal-handle { display: none; }
+@keyframes dmPop {
+  from { opacity: 0; transform: scale(0.82) translateY(16px); }
+  to   { opacity: 1; transform: scale(1)    translateY(0); }
 }
-.day-modal-handle {
-  width: 36px; height: 4px; border-radius: 99px;
-  background: rgba(255,255,255,0.15);
-  margin: 12px auto 0;
-  flex-shrink: 0;
-}
+.day-modal-handle { display: none; }
 .day-modal-header {
   display: flex; align-items: center; justify-content: space-between;
   padding: 14px 20px 12px;
@@ -567,21 +553,64 @@ body::after {
   <div class="section">
     <div class="section-title">Performance</div>
     <div class="gm-card">
-      <div style="display:flex;align-items:flex-start;justify-content:space-between;flex-wrap:wrap;gap:12px;margin-bottom:14px">
-        <div>
-          <div style="font-size:10.5px;font-weight:700;letter-spacing:.18em;text-transform:uppercase;color:var(--text-tertiary);margin-bottom:6px" id="statsDate">Today</div>
-          <span style="font-size:42px;font-weight:700;font-variant-numeric:tabular-nums;letter-spacing:-.045em;color:var(--text-primary);line-height:1" id="statsDayPnl">$0</span>
+      <div style="display:grid;grid-template-columns:1fr 1px 1fr;gap:0;align-items:center">
+
+        <!-- LEFT: date / PnL / 2x2 stat grid -->
+        <div style="padding-right:20px">
+          <div style="font-size:10.5px;font-weight:700;letter-spacing:.18em;text-transform:uppercase;color:var(--text-tertiary);margin-bottom:5px" id="statsDate">Today</div>
+          <span style="font-size:38px;font-weight:800;font-variant-numeric:tabular-nums;letter-spacing:-.045em;color:var(--text-primary);line-height:1;display:block;margin-bottom:14px" id="statsDayPnl">$0</span>
+          <div class="stat-grid">
+            <div class="stat"><div class="stat-num" id="statTotalPnl">$0</div><div class="stat-label">All-time P&amp;L</div></div>
+            <div class="stat"><div class="stat-num" id="statAvgWin">—</div><div class="stat-label">Avg Win</div></div>
+            <div class="stat"><div class="stat-num" id="statAvgLoss">—</div><div class="stat-label">Avg Loss</div></div>
+            <div class="stat"><div class="stat-num" id="statBestDay">—</div><div class="stat-label">Best Day</div></div>
+          </div>
         </div>
-        <div style="display:flex;flex-direction:column;align-items:flex-end;gap:6px">
-          <span style="font-family:var(--font-mono);font-size:13px;color:var(--text-secondary)" id="statsWinRate">— win rate</span>
-          <span style="font-size:11px;color:var(--text-tertiary)" id="statsTrades">0 trades today</span>
+
+        <!-- DIVIDER -->
+        <div style="background:rgba(255,255,255,0.07);align-self:stretch"></div>
+
+        <!-- RIGHT: win rate / donut + legend side by side -->
+        <div style="padding-left:20px;display:flex;flex-direction:column;align-items:center;gap:14px">
+          <div style="text-align:center">
+            <div style="font-size:15px;font-weight:700;color:#6BE3A4;letter-spacing:-.01em;text-shadow:0 0 18px rgba(107,227,164,0.85),0 0 36px rgba(107,227,164,0.4)" id="statsWinRate">— win rate</div>
+            <div style="font-size:11px;color:var(--text-tertiary);margin-top:3px" id="statsTrades">0 trades today</div>
+          </div>
+          <div style="display:flex;align-items:center;gap:18px">
+            <!-- Donut -->
+            <div style="position:relative;width:160px;height:160px;flex-shrink:0">
+              <svg viewBox="0 0 100 100" width="160" height="160" style="display:block;overflow:visible;transform:rotate(-90deg)">
+                <circle cx="50" cy="50" r="38" fill="none" stroke="rgba(255,255,255,0.06)" stroke-width="9"/>
+                <circle id="donutLoss" cx="50" cy="50" r="38" fill="none" stroke="#FF6B6B" stroke-width="9" stroke-linecap="round" stroke-dasharray="0 239" style="transition:stroke-dasharray 0.8s cubic-bezier(0.22,1,0.36,1);filter:drop-shadow(0 0 8px rgba(255,107,107,0.7))"/>
+                <circle id="donutWin" cx="50" cy="50" r="38" fill="none" stroke="#6BE3A4" stroke-width="9" stroke-linecap="round" stroke-dasharray="0 239" stroke-dashoffset="0" style="transition:stroke-dasharray 0.8s cubic-bezier(0.22,1,0.36,1) 0.1s,stroke-dashoffset 0.8s cubic-bezier(0.22,1,0.36,1) 0.1s;filter:drop-shadow(0 0 8px rgba(107,227,164,0.7))"/>
+              </svg>
+              <div style="position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;pointer-events:none">
+                <span id="donutPct" style="font-size:26px;font-weight:800;letter-spacing:-.04em;color:#fff;line-height:1;text-shadow:0 0 18px rgba(107,227,164,0.9),0 0 36px rgba(107,227,164,0.45)">—</span>
+                <span style="font-size:9px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:var(--text-tertiary);margin-top:4px">win</span>
+              </div>
+            </div>
+            <!-- Legend -->
+            <div style="display:flex;flex-direction:column;gap:10px;min-width:90px">
+              <div style="display:flex;align-items:center;gap:8px">
+                <div style="width:8px;height:8px;border-radius:50%;flex-shrink:0;background:#6BE3A4;box-shadow:0 0 6px rgba(107,227,164,0.75)"></div>
+                <span style="font-size:12px;color:var(--text-secondary)">Wins</span>
+                <span id="donutWinCount" style="margin-left:auto;font-size:14px;font-weight:700;color:#6BE3A4">0</span>
+              </div>
+              <div style="display:flex;align-items:center;gap:8px">
+                <div style="width:8px;height:8px;border-radius:50%;flex-shrink:0;background:#FF6B6B;box-shadow:0 0 6px rgba(255,107,107,0.75)"></div>
+                <span style="font-size:12px;color:var(--text-secondary)">Losses</span>
+                <span id="donutLossCount" style="margin-left:auto;font-size:14px;font-weight:700;color:#FF6B6B">0</span>
+              </div>
+              <div style="height:1px;background:rgba(255,255,255,0.07)"></div>
+              <div style="display:flex;align-items:center;gap:8px">
+                <div style="width:8px;height:8px;border-radius:50%;flex-shrink:0;background:rgba(255,255,255,0.2)"></div>
+                <span style="font-size:12px;color:var(--text-secondary)">Total</span>
+                <span id="donutTotal" style="margin-left:auto;font-size:14px;font-weight:700;color:var(--text-primary)">0</span>
+              </div>
+            </div>
+          </div>
         </div>
-      </div>
-      <div class="stat-grid">
-        <div class="stat"><div class="stat-num" id="statTotalPnl">$0</div><div class="stat-label">All-time P&amp;L</div></div>
-        <div class="stat"><div class="stat-num" id="statAvgWin">—</div><div class="stat-label">Avg Win</div></div>
-        <div class="stat"><div class="stat-num" id="statAvgLoss">—</div><div class="stat-label">Avg Loss</div></div>
-        <div class="stat"><div class="stat-num" id="statBestDay">—</div><div class="stat-label">Best Day</div></div>
+
       </div>
     </div>
   </div>
@@ -996,6 +1025,22 @@ body::after {
     const bdEl = document.getElementById('statBestDay');
     bdEl.textContent = bestDay !== null ? fmtPnl(bestDay) : '—';
     bdEl.className   = 'stat-num ' + (bestDay !== null && bestDay > 0 ? 'pos' : '');
+
+    // Donut chart
+    const circ = 2 * Math.PI * 38; // ≈238.76
+    const wPct = trades.length > 0 ? wins.length / trades.length : 0;
+    const lPct = trades.length > 0 ? losses.length / trades.length : 0;
+    const wArc = wPct * circ;
+    const lArc = lPct * circ;
+    const gap  = trades.length > 0 ? 4 : 0;
+    document.getElementById('donutWin').setAttribute('stroke-dasharray', wArc > 0 ? (wArc - gap) + ' ' + (circ - wArc + gap) : '0 ' + circ);
+    document.getElementById('donutWin').setAttribute('stroke-dashoffset', '0');
+    document.getElementById('donutLoss').setAttribute('stroke-dasharray', lArc > 0 ? (lArc - gap) + ' ' + (circ - lArc + gap) : '0 ' + circ);
+    document.getElementById('donutLoss').setAttribute('stroke-dashoffset', -(wArc) + '');
+    document.getElementById('donutPct').textContent = winRate !== null ? winRate + '%' : '—';
+    document.getElementById('donutWinCount').textContent = wins.length;
+    document.getElementById('donutLossCount').textContent = losses.length;
+    document.getElementById('donutTotal').textContent = trades.length;
   }
 
   // ── Trade list ────────────────────────────────────────────────────────────
