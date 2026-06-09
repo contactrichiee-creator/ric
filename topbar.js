@@ -21,8 +21,7 @@
   display: flex; justify-content: flex-end; align-items: center;
   gap: 8px;
   padding: max(12px, env(safe-area-inset-top)) max(14px, env(safe-area-inset-right)) 8px max(14px, env(safe-area-inset-left));
-  background: #060810;
-  border-bottom: 1px solid rgba(59, 130, 246, 0.12);
+  background: transparent;
   font-family: -apple-system, BlinkMacSystemFont, "Inter", "Segoe UI", Roboto, sans-serif;
 }
 .topbar-water-wrap { display: flex; align-items: stretch; }
