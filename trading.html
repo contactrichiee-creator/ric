@@ -390,9 +390,46 @@ body::after {
 }
 .photo-thumb-wrap:hover .photo-thumb-del { opacity: 1; }
 
-/* ===== Market bias ===== */
-.bias-row { display: flex; gap: 12px; align-items: flex-start; }
-.bias-btns { display: flex; flex-direction: column; gap: 5px; flex-shrink: 0; }
+/* ===== Quote of the Day ===== */
+.quote-mark {
+  font-size: 88px; font-weight: 900; line-height: 0.75;
+  color: rgba(96,165,250,0.12);
+  position: absolute; top: 12px; left: 16px;
+  font-family: Georgia, "Times New Roman", serif;
+  pointer-events: none; user-select: none;
+  filter: drop-shadow(0 0 12px rgba(96,165,250,0.18));
+}
+.quote-text {
+  font-size: 15px; font-style: italic; line-height: 1.7;
+  color: var(--text-primary);
+  padding: 8px 8px 10px 42px;
+  position: relative; z-index: 1;
+  letter-spacing: 0.005em;
+}
+.quote-attr {
+  font-family: var(--font-mono);
+  font-size: 11px; font-weight: 700;
+  color: #60A5FA;
+  letter-spacing: 0.08em;
+  padding: 0 8px 0 42px;
+  filter: drop-shadow(0 0 6px rgba(96,165,250,0.35));
+}
+.quote-footer {
+  display: flex; align-items: center; justify-content: space-between;
+  margin-top: 14px; padding-top: 12px;
+  border-top: 1px solid rgba(59,130,246,0.08);
+}
+.quote-day-label {
+  font-family: var(--font-mono); font-size: 9px; font-weight: 600;
+  letter-spacing: 0.14em; text-transform: uppercase;
+  color: var(--text-tertiary);
+}
+.quote-dot {
+  width: 6px; height: 6px; border-radius: 50%;
+  background: rgba(96,165,250,0.40);
+  box-shadow: 0 0 8px rgba(96,165,250,0.35);
+}
+
 .bias-btn {
   padding: 7px 16px; border-radius: 8px;
   border: 1px solid rgba(255,255,255,0.08); background: transparent;
@@ -553,18 +590,16 @@ body::after {
     </div>
   </div>
 
-  <!-- ===== MARKET CONDITIONS ===== -->
+  <!-- ===== QUOTE OF THE DAY ===== -->
   <div class="section">
-    <div class="section-title">Market Conditions</div>
-    <div class="gm-card">
-      <div class="bias-row">
-        <div class="bias-btns">
-          <button class="bias-btn bull" id="biasBull" type="button">↑ Bull</button>
-          <button class="bias-btn neut active" id="biasNeut" type="button">— Flat</button>
-          <button class="bias-btn bear" id="biasBear" type="button">↓ Bear</button>
-        </div>
-        <textarea class="gm-input" id="biasNotes" rows="3" style="resize:vertical;min-height:80px"
-          placeholder="Key levels: VWAP, overnight high/low, daily pivots, catalysts, news events…"></textarea>
+    <div class="section-title">Quote of the Day</div>
+    <div class="gm-card" style="position:relative;overflow:hidden">
+      <div class="quote-mark">"</div>
+      <div class="quote-text" id="quoteText"></div>
+      <div class="quote-attr" id="quoteAttr"></div>
+      <div class="quote-footer">
+        <span class="quote-day-label" id="quoteDayLabel"></span>
+        <span class="quote-dot"></span>
       </div>
     </div>
   </div>
@@ -725,7 +760,6 @@ body::after {
 
   const STORE_KEY  = 'trading_journal_v1';
   const PHOTOS_KEY = 'trading_photos_v1'; // local-only, not synced
-  const BIAS_KEY   = 'trading_bias_v1';
 
   // ── Helpers ────────────────────────────────────────────────────────────
   function pad2(n) { return String(n).padStart(2, '0'); }
@@ -760,8 +794,6 @@ body::after {
     // Photos never go through initCloudSync — save directly without triggering sync
     try { localStorage.__rawSet ? localStorage.__rawSet(PHOTOS_KEY, JSON.stringify(p)) : localStorage.setItem(PHOTOS_KEY, JSON.stringify(p)); } catch(e) {}
   }
-  function loadBias()   { try { return JSON.parse(localStorage.getItem(BIAS_KEY)) || {}; } catch(e) { return {}; } }
-  function saveBias(b)  { localStorage.setItem(BIAS_KEY, JSON.stringify(b)); }
 
   // ── Image compression ───────────────────────────────────────────────────
   function compressImage(file) {
@@ -1015,8 +1047,6 @@ body::after {
         '<div class="analysis-thinking"><div class="analysis-dot"></div> Reading your trade…</div>' +
       '</div>';
 
-    const bias        = loadBias();
-    const todayBias   = bias[todayStr()] || {};
     const recent      = trades.slice().sort(function (a,b) { return (b.date+b.time).localeCompare(a.date+a.time); }).slice(0, 10);
     const todayTrades = trades.filter(function (t) { return t.date === trade.date; });
     const photos      = loadPhotos();
@@ -1033,8 +1063,6 @@ body::after {
       '  Emotional state: ' + emotionLabel(trade.emotion || 'calm') + '\n' +
       '  Notes: ' + (trade.notes || 'none') + '\n' +
       '  Trade screenshots attached: ' + (hasPhotos ? 'yes' : 'no') + '\n' +
-      (todayBias.bias  ? '  Day bias: ' + todayBias.bias + '\n' : '') +
-      (todayBias.notes ? '  Market notes: ' + todayBias.notes + '\n' : '') +
       '  Total trades on this date: ' + todayTrades.length + '\n\n' +
       'Last 10 trades (pattern detection):\n' +
       recent.map(function (t) {
@@ -1233,39 +1261,73 @@ body::after {
   }
 
   // ── Market Bias ───────────────────────────────────────────────────────────
-  function initBias() {
-    const saved   = loadBias();
-    const todayB  = saved[todayStr()] || {};
-    const notesEl = document.getElementById('biasNotes');
-    notesEl.value = todayB.notes || '';
-    setBiasActive(todayB.bias || 'neutral');
+  // ── Quote of the Day ─────────────────────────────────────────────────────
+  var QUOTES = [
+    { q: "The elements of good trading are: cutting losses, cutting losses, and cutting losses.", a: "Ed Seykota" },
+    { q: "I believe in analysis and not forecasting.", a: "Nicolas Darvas" },
+    { q: "The most important thing in making money is not letting your losses get out of hand.", a: "George Soros" },
+    { q: "Don't focus on making money; focus on protecting what you have.", a: "Paul Tudor Jones" },
+    { q: "Win or lose, everybody gets what they want out of the market. Some people seem to like to lose, so they win by losing money.", a: "Ed Seykota" },
+    { q: "The market is a device for transferring money from the impatient to the patient.", a: "Warren Buffett" },
+    { q: "It's not whether you're right or wrong that's important, but how much money you make when you're right and how much you lose when you're wrong.", a: "George Soros" },
+    { q: "I'm always thinking about losing money as opposed to making money. Don't focus on making money, focus on protecting what you have.", a: "Paul Tudor Jones" },
+    { q: "The key to trading success is emotional discipline. If intelligence were the key, there would be a lot more people making money trading.", a: "Victor Sperandeo" },
+    { q: "Throughout my financial career, I have continually witnessed examples of other people that I have known being ruined by a failure to respect risk.", a: "Larry Hite" },
+    { q: "The goal of a successful trader is to make the best trades. Money is secondary.", a: "Alexander Elder" },
+    { q: "In this business, if you're good, you're right six times out of ten. You're never going to be right nine times out of ten.", a: "Peter Lynch" },
+    { q: "Markets can remain irrational longer than you can remain solvent.", a: "John Maynard Keynes" },
+    { q: "The trend is your friend until the end when it bends.", a: "Ed Seykota" },
+    { q: "I have two basic rules about winning in trading as well as in life: if you don't bet, you can't win. If you lose all your chips, you can't bet.", a: "Larry Hite" },
+    { q: "Risk comes from not knowing what you're doing.", a: "Warren Buffett" },
+    { q: "Trading is a psychological game. Most people think that they're playing against the market, but the market doesn't care. You're really playing against yourself.", a: "Martin Schwartz" },
+    { q: "The biggest risk is not taking a risk. In a world that's changing really quickly, the only strategy that is guaranteed to fail is not taking risks.", a: "Mark Zuckerberg" },
+    { q: "The secret to being successful from a trading perspective is to have an indefatigable and an undying and unquenchable thirst for information and knowledge.", a: "Paul Tudor Jones" },
+    { q: "Amateurs think about how much money they can make. Professionals think about how much money they could lose.", a: "Jack Schwager" },
+    { q: "Every trader has strengths and weakness. Some are good holders of winners, but may hold their losers a little too long. Others may cut their winners a little short, but are quick to take their losses.", a: "Steve Cohen" },
+    { q: "I don't think you can consistently be a winning trader if you're banking on being right more than 50 percent of the time.", a: "William Eckhardt" },
+    { q: "There is no holy grail in trading. If you are not disciplined, no system in the world will work for you.", a: "Larry Williams" },
+    { q: "All of the successful traders I know have the same trait — they are passionate about trading.", a: "Michael Marcus" },
+    { q: "The hard work in trading comes in the preparation. The actual process of trading, however, should be effortless.", a: "Jack Schwager" },
+    { q: "One of the most important rules in trading is to not let your emotions take over your mind.", a: "Mark Douglas" },
+    { q: "Losers average losers.", a: "Paul Tudor Jones" },
+    { q: "The market does not know if you are long or short and could not care less. You are the only one emotionally involved with your position.", a: "Jesse Livermore" },
+    { q: "To be a successful trader you have to be able to admit mistakes. People who are very bright don't make very many mistakes.", a: "Bruce Kovner" },
+    { q: "It never was my thinking that made the big money for me. It always was my sitting.", a: "Jesse Livermore" },
+    { q: "Price is what you pay. Value is what you get.", a: "Warren Buffett" },
+    { q: "The principles of successful stock speculation are based on the supposition that people will continue in the future to make the same mistakes they have made in the past.", a: "Jesse Livermore" },
+    { q: "Good investing is boring.", a: "George Soros" },
+    { q: "Cut short your losses; let your profits run on.", a: "David Ricardo" },
+    { q: "I am always doing that which I cannot do, in order that I may learn how to do it.", a: "Jesse Livermore" },
+    { q: "The trading rules I live by are: fear of loss, not of profit.", a: "Paul Tudor Jones" },
+    { q: "A loss never bothers me after I take it. I forget it overnight. But being wrong—not taking the loss—that is what does damage to the pocketbook and to the soul.", a: "Jesse Livermore" },
+    { q: "The entrance strategy is actually more important than the exit strategy.", a: "Edward Lampert" },
+    { q: "Every morning I get up and look through the Forbes list of the richest people in America. If I'm not there, I go to work.", a: "Robert Orben" },
+    { q: "Patterns repeat, because human nature hasn't changed for thousands of years.", a: "Jesse Livermore" },
+    { q: "Know what you own, and know why you own it.", a: "Peter Lynch" },
+    { q: "Trade what's happening, not what you think is gonna happen.", a: "Doug Gregory" },
+    { q: "The biggest mistake investors make is to believe that what happened in the recent past is likely to persist.", a: "Ray Dalio" },
+    { q: "He who knows when he can fight and when he cannot, will be victorious.", a: "Sun Tzu" },
+    { q: "Opportunities come infrequently. When it rains gold, put out the bucket, not the thimble.", a: "Warren Buffett" },
+    { q: "Throughout all my years of investing I've found that the big money was never made in the buying or the selling. The big money was made in the waiting.", a: "Jesse Livermore" },
+  ];
 
-    document.getElementById('biasBull').addEventListener('click', function () { saveTodayBias('bullish'); setBiasActive('bullish'); });
-    document.getElementById('biasNeut').addEventListener('click', function () { saveTodayBias('neutral'); setBiasActive('neutral'); });
-    document.getElementById('biasBear').addEventListener('click', function () { saveTodayBias('bearish'); setBiasActive('bearish'); });
-    notesEl.addEventListener('input', function () { saveTodayBias(currentBias()); });
-  }
-  function currentBias() {
-    if (document.getElementById('biasBull').classList.contains('active')) return 'bullish';
-    if (document.getElementById('biasBear').classList.contains('active')) return 'bearish';
-    return 'neutral';
-  }
-  function setBiasActive(val) {
-    document.getElementById('biasBull').classList.toggle('active', val === 'bullish');
-    document.getElementById('biasNeut').classList.toggle('active', val === 'neutral');
-    document.getElementById('biasBear').classList.toggle('active', val === 'bearish');
-  }
-  function saveTodayBias(bias) {
-    var all = loadBias();
-    all[todayStr()] = { bias: bias, notes: document.getElementById('biasNotes').value };
-    saveBias(all);
+  function renderQuote() {
+    var d = new Date();
+    var dayOfYear = Math.floor((d - new Date(d.getFullYear(), 0, 0)) / 86400000);
+    var idx = (d.getFullYear() * 1000 + dayOfYear) % QUOTES.length;
+    var q = QUOTES[idx];
+    var months = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+    var days   = ['Sunday','Monday','Tuesday','Wednesday','Thursday','Friday','Saturday'];
+    document.getElementById('quoteText').textContent = q.q;
+    document.getElementById('quoteAttr').textContent = '— ' + q.a;
+    document.getElementById('quoteDayLabel').textContent = days[d.getDay()] + ' · ' + months[d.getMonth()] + ' ' + d.getDate() + ', ' + d.getFullYear();
   }
 
   // ── Boot ──────────────────────────────────────────────────────────────────
   renderStats();
   renderCalendar();
+  renderQuote();
   initForm();
-  initBias();
 
   document.getElementById('calPrev').addEventListener('click', function () {
     _calMonth--; if (_calMonth < 0) { _calMonth = 11; _calYear--; }
@@ -1289,7 +1351,7 @@ body::after {
     if (typeof initCloudSync !== 'function') return;
     initCloudSync({
       appKey: 'trading',
-      syncedKeys: [STORE_KEY, BIAS_KEY], // photos are local-only
+      syncedKeys: [STORE_KEY], // photos are local-only
       onApplied: function () { renderStats(); renderCalendar(); }
     });
   });
