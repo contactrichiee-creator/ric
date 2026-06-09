@@ -109,6 +109,21 @@ body::after {
   grid-template-columns: repeat(2, 1fr);
   gap: 8px;
 }
+.perf-grid {
+  display: grid;
+  grid-template-columns: 1fr 1px 1fr;
+  gap: 0;
+  align-items: center;
+}
+@media (max-width: 540px) {
+  .perf-grid {
+    grid-template-columns: 1fr;
+    gap: 20px;
+  }
+  .perf-divider { display: none; }
+  .perf-left { padding-right: 0 !important; }
+  .perf-right { padding-left: 0 !important; border-top: 1px solid rgba(255,255,255,0.07); padding-top: 20px; }
+}
 .stat {
   background: rgba(255,255,255,0.035);
   border: 1px solid rgba(255,255,255,0.06);
@@ -237,13 +252,15 @@ body::after {
 
 /* ===== Day Modal ===== */
 .day-modal-bg {
-  display: none; position: fixed; inset: 0; z-index: 100;
+  display: flex; position: fixed; inset: 0; z-index: 100;
   background: rgba(0,0,0,0.75); backdrop-filter: blur(8px);
   -webkit-backdrop-filter: blur(8px);
   align-items: center; justify-content: center;
   padding: 20px;
+  opacity: 0; pointer-events: none;
+  transition: opacity 0.2s ease;
 }
-.day-modal-bg.open { display: flex; animation: dmBgIn 0.2s ease both; }
+.day-modal-bg.open { opacity: 1; pointer-events: auto; animation: dmBgIn 0.2s ease both; }
 @keyframes dmBgIn { from { opacity: 0; } to { opacity: 1; } }
 .day-modal {
   width: 100%; max-width: 520px;
@@ -553,10 +570,10 @@ body::after {
   <div class="section">
     <div class="section-title">Performance</div>
     <div class="gm-card">
-      <div style="display:grid;grid-template-columns:1fr 1px 1fr;gap:0;align-items:center">
+      <div class="perf-grid">
 
         <!-- LEFT: date / PnL / 2x2 stat grid -->
-        <div style="padding-right:20px">
+        <div class="perf-left" style="padding-right:20px">
           <div style="font-size:10.5px;font-weight:700;letter-spacing:.18em;text-transform:uppercase;color:var(--text-tertiary);margin-bottom:5px" id="statsDate">Today</div>
           <span style="font-size:38px;font-weight:800;font-variant-numeric:tabular-nums;letter-spacing:-.045em;color:var(--text-primary);line-height:1;display:block;margin-bottom:14px" id="statsDayPnl">$0</span>
           <div class="stat-grid">
@@ -568,10 +585,10 @@ body::after {
         </div>
 
         <!-- DIVIDER -->
-        <div style="background:rgba(255,255,255,0.07);align-self:stretch"></div>
+        <div class="perf-divider" style="background:rgba(255,255,255,0.07);align-self:stretch"></div>
 
         <!-- RIGHT: win rate / donut + legend side by side -->
-        <div style="padding-left:20px;display:flex;flex-direction:column;align-items:center;gap:14px">
+        <div class="perf-right" style="padding-left:20px;display:flex;flex-direction:column;align-items:center;gap:14px">
           <div style="text-align:center">
             <div style="font-size:15px;font-weight:700;color:#6BE3A4;letter-spacing:-.01em;text-shadow:0 0 18px rgba(107,227,164,0.85),0 0 36px rgba(107,227,164,0.4)" id="statsWinRate">— win rate</div>
             <div style="font-size:11px;color:var(--text-tertiary);margin-top:3px" id="statsTrades">0 trades today</div>
@@ -974,12 +991,10 @@ body::after {
     });
 
     document.getElementById('dayModalBg').classList.add('open');
-    document.body.classList.add('topbar-modal-open');
   }
 
   function closeDayModal() {
     document.getElementById('dayModalBg').classList.remove('open');
-    document.body.classList.remove('topbar-modal-open');
   }
 
   // ── Stats ────────────────────────────────────────────────────────────────
