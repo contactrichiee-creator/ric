@@ -166,14 +166,14 @@ body.topbar-modal-open { overflow: hidden; touch-action: none; }
 
   const bottombarHtml = `
 <nav class="bottombar" id="bottombar" role="navigation" aria-label="Main tabs">
+  <a href="gym.html" class="bottombar-tab" data-page="fitness">
+    <span class="bottombar-tab-icon">💪</span><span>Fitness</span>
+  </a>
   <a href="index.html" class="bottombar-tab" data-page="main">
     <span class="bottombar-tab-icon">🏠</span><span>Main</span>
   </a>
-  <a href="health.html" class="bottombar-tab" data-page="health">
-    <span class="bottombar-tab-icon">💊</span><span>Health</span>
-  </a>
-  <a href="gym.html" class="bottombar-tab" data-page="fitness">
-    <span class="bottombar-tab-icon">💪</span><span>Fitness</span>
+  <a href="trading.html" class="bottombar-tab" data-page="trading">
+    <span class="bottombar-tab-icon">📈</span><span>Trading</span>
   </a>
 </nav>`;
 
@@ -187,8 +187,8 @@ body.topbar-modal-open { overflow: hidden; touch-action: none; }
   function shouldShowChrome() { return !isFinancePage() && !isEmbedded(); }
   function currentPageKey() {
     const p = (window.location.pathname || '').toLowerCase();
-    if (p.endsWith('health.html')) return 'health';
     if (p.endsWith('gym.html')) return 'fitness';
+    if (p.endsWith('trading.html')) return 'trading';
     return 'main';
   }
 
