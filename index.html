@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<meta name="theme-color" content="#050506">
+<meta name="theme-color" content="#03050c">
 <title>Dashboard</title>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script src="lock.js" defer></script>
@@ -24,7 +24,7 @@
 * { box-sizing: border-box; }
 html, body {
   margin: 0; padding: 0;
-  background: #050506;
+  background: #03050c;
   color: var(--text-secondary);
   font-family: var(--font);
   -webkit-font-smoothing: antialiased;
@@ -41,8 +41,8 @@ body::before {
   content: '';
   position: fixed; inset: 0;
   background:
-    radial-gradient(circle at 82% 14%, rgba(224, 118, 88, 0.16), transparent 45%),
-    radial-gradient(circle at 18% 90%, rgba(180, 180, 200, 0.06), transparent 50%);
+    radial-gradient(circle at 82% 14%, rgba(37, 99, 235, 0.18), transparent 45%),
+    radial-gradient(circle at 18% 90%, rgba(99, 102, 241, 0.10), transparent 50%);
   filter: blur(40px);
   pointer-events: none;
   z-index: -2;
@@ -51,7 +51,7 @@ body::before {
 body::after {
   content: '';
   position: fixed; inset: 0;
-  background-image: radial-gradient(rgba(255,255,255,0.014) 1px, transparent 1px);
+  background-image: radial-gradient(rgba(96, 165, 250, 0.018) 1px, transparent 1px);
   background-size: 3px 3px;
   pointer-events: none;
   z-index: -1;
@@ -109,7 +109,7 @@ body::after {
 .tile:hover {
   transform: translateY(-3px);
   border-color: var(--accent);
-  box-shadow: 0 20px 56px rgba(0, 0, 0, 0.55);
+  box-shadow: 0 20px 56px rgba(0, 0, 0, 0.55), 0 0 40px rgba(59, 130, 246, 0.16);
 }
 
 .tile.big  { grid-column: span 2; grid-row: span 2; }
