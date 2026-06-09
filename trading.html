@@ -7,6 +7,7 @@
 <meta name="theme-color" content="#03050c">
 <title>Trading Journal · Dashboard</title>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="config.js"></script>
 <script src="sync.js" defer></script>
 <script src="topbar.js" defer></script>
 <style>
@@ -545,7 +546,7 @@ body::after {
   'use strict';
 
   // Paste your Anthropic key here to enable AI trade analysis
-  const ANTHROPIC_API_KEY = '';
+  const ANTHROPIC_API_KEY = window._anthropicKey || '';
 
   const STORE_KEY  = 'trading_journal_v1';
   const PHOTOS_KEY = 'trading_photos_v1'; // local-only, not synced
@@ -763,7 +764,7 @@ body::after {
       resultEl.innerHTML =
         '<div class="analysis-box" style="border-color:rgba(242,192,99,0.25)">' +
           '<div class="analysis-label" style="color:var(--warning)">⚠ API Key Required</div>' +
-          'Open trading.html and set <code>ANTHROPIC_API_KEY</code> at the top of the script to enable AI analysis.' +
+          'Add your Anthropic API key to <code>config.js</code> to enable AI analysis.' +
         '</div>';
       return;
     }
