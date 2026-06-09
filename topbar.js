@@ -339,10 +339,8 @@ body.topbar-modal-open { overflow: hidden; touch-action: none; }
     const s = document.createElement('style');
     s.id = 'topbar-fade-style';
     s.textContent = `
-@keyframes _pgIn  { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: translateY(0); } }
-@keyframes _pgOut { to   { opacity: 0; transform: translateY(-6px); } }
-body { animation: _pgIn 0.28s cubic-bezier(0.22,1,0.36,1) both; }
-body._pg-out { animation: _pgOut 0.18s ease forwards !important; pointer-events: none; }
+@keyframes _pgOut { to { opacity: 0; } }
+body._pg-out { animation: _pgOut 0.22s ease-in forwards !important; pointer-events: none; }
 `;
     document.head.appendChild(s);
   }
@@ -361,7 +359,7 @@ body._pg-out { animation: _pgOut 0.18s ease forwards !important; pointer-events:
       } catch (_) { return; }
       e.preventDefault();
       document.body.classList.add('_pg-out');
-      setTimeout(function () { window.location.href = href; }, 190);
+      setTimeout(function () { window.location.href = href; }, 230);
     });
   }
 
