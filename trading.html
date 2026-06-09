@@ -545,8 +545,7 @@ body::after {
 (function () {
   'use strict';
 
-  // Paste your Anthropic key here to enable AI trade analysis
-  const ANTHROPIC_API_KEY = window._anthropicKey || '';
+  const ANTHROPIC_API_KEY = localStorage.getItem('_ak') || window._anthropicKey || '';
 
   const STORE_KEY  = 'trading_journal_v1';
   const PHOTOS_KEY = 'trading_photos_v1'; // local-only, not synced
