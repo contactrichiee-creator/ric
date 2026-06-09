@@ -110,7 +110,13 @@ html, body {
   display: flex; align-items: center; justify-content: space-between;
   margin-bottom: 18px;
 }
-.title { font-size: 22px; font-weight: 700; letter-spacing: -0.015em; margin: 0; }
+.title {
+  font-size: 38px; font-weight: 800; letter-spacing: -0.03em; margin: 0;
+  background: linear-gradient(160deg, #FFFFFF 0%, #93C5FD 100%);
+  -webkit-background-clip: text; background-clip: text;
+  -webkit-text-fill-color: transparent; color: transparent;
+  filter: drop-shadow(0 0 24px rgba(96,165,250,0.55));
+}
 .icon-btn {
   width: 38px; height: 38px;
   display: flex; align-items: center; justify-content: center;

@@ -227,8 +227,12 @@ img, video, canvas, svg { max-width: 100%; }
   margin-bottom: 18px;
 }
 .po-title {
-  font-size: 22px; font-weight: 700; letter-spacing: -0.015em;
+  font-size: 38px; font-weight: 800; letter-spacing: -0.03em;
   margin: 0;
+  background: linear-gradient(160deg, #FFFFFF 0%, #93C5FD 100%);
+  -webkit-background-clip: text; background-clip: text;
+  -webkit-text-fill-color: transparent; color: transparent;
+  filter: drop-shadow(0 0 24px rgba(96,165,250,0.55));
 }
 .po-icon-btn {
   width: 38px; height: 38px;
@@ -685,7 +689,7 @@ img, video, canvas, svg { max-width: 100%; }
   .po-shell { padding: 14px max(10px, env(safe-area-inset-right)) calc(32px + env(safe-area-inset-bottom)) max(10px, env(safe-area-inset-left)); }
 
   /* Header — smaller title so the gear button never gets clipped */
-  .po-title { font-size: 18px; letter-spacing: -0.01em; }
+  .po-title { font-size: 28px; letter-spacing: -0.025em; }
   .po-header { margin-bottom: 14px; gap: 10px; }
 
   /* Cards — tighter padding so content has room */
@@ -739,7 +743,7 @@ img, video, canvas, svg { max-width: 100%; }
 /* Anything narrower than ~360px (iPhone SE / mini) gets a final pass */
 @media (max-width: 360px) {
   .po-shell { padding-left: 8px; padding-right: 8px; }
-  .po-title { font-size: 17px; }
+  .po-title { font-size: 26px; }
   .po-reps-row { grid-template-columns: repeat(3, minmax(0, 1fr)); }
 }
 
