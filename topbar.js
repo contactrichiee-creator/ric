@@ -82,35 +82,46 @@
   filter: grayscale(100%) brightness(1.4); opacity: 0.85;
 }
 .bottombar {
-  position: fixed; bottom: 0; left: 0; right: 0; z-index: 40;
-  display: flex; justify-content: space-around; align-items: stretch;
-  padding: 6px 0 calc(6px + env(safe-area-inset-bottom));
-  background: #060810;
-  border-top: 1px solid rgba(59, 130, 246, 0.12);
+  position: fixed;
+  bottom: calc(16px + env(safe-area-inset-bottom));
+  left: 50%; transform: translateX(-50%);
+  z-index: 40;
+  display: flex; align-items: center;
+  gap: 4px;
+  padding: 8px 10px;
+  background: rgba(12, 16, 30, 0.88);
+  backdrop-filter: blur(20px) saturate(1.4);
+  -webkit-backdrop-filter: blur(20px) saturate(1.4);
+  border: 1px solid rgba(255, 255, 255, 0.10);
+  border-radius: 999px;
+  box-shadow: 0 8px 32px rgba(0,0,0,0.55), 0 0 0 0.5px rgba(255,255,255,0.05) inset;
   font-family: -apple-system, BlinkMacSystemFont, "Inter", "Segoe UI", Roboto, sans-serif;
+  white-space: nowrap;
 }
 .bottombar-tab {
-  flex: 1;
   display: flex; flex-direction: column; align-items: center; justify-content: center;
-  gap: 3px; padding: 6px 0 4px; text-decoration: none;
-  color: rgba(255, 255, 255, 0.40);
-  font-size: 10px; font-weight: 600; letter-spacing: 0.04em;
-  -webkit-tap-highlight-color: transparent; transition: color 0.15s;
+  gap: 3px; padding: 8px 22px; text-decoration: none;
+  color: rgba(255, 255, 255, 0.38);
+  font-size: 10px; font-weight: 600; letter-spacing: 0.05em;
+  border-radius: 999px;
+  -webkit-tap-highlight-color: transparent;
+  transition: color 0.18s, background 0.18s;
 }
-.bottombar-tab:hover { color: rgba(147, 197, 253, 0.70); }
+.bottombar-tab:hover { color: rgba(147, 197, 253, 0.80); background: rgba(255,255,255,0.06); }
 .bottombar-tab-icon {
-  font-size: 24px; line-height: 1;
-  filter: grayscale(100%) brightness(1.2); opacity: 0.50;
-  transition: opacity 0.15s, filter 0.15s, transform 0.10s;
+  font-size: 22px; line-height: 1;
+  filter: grayscale(100%) brightness(1.2); opacity: 0.45;
+  transition: opacity 0.18s, filter 0.18s, transform 0.12s cubic-bezier(0.34,1.56,0.64,1);
 }
-.bottombar-tab:hover .bottombar-tab-icon { opacity: 0.75; filter: grayscale(40%) brightness(1.4); }
-.bottombar-tab.active { color: #60A5FA; }
-.bottombar-tab.active .bottombar-tab-icon {
-  filter: none; opacity: 1;
+.bottombar-tab:hover .bottombar-tab-icon { opacity: 0.75; filter: grayscale(30%) brightness(1.4); }
+.bottombar-tab.active {
+  color: #60A5FA;
+  background: rgba(96, 165, 250, 0.12);
 }
-.bottombar-tab:active .bottombar-tab-icon { transform: scale(0.92); }
+.bottombar-tab.active .bottombar-tab-icon { filter: none; opacity: 1; }
+.bottombar-tab:active .bottombar-tab-icon { transform: scale(0.88); }
 body.has-bottombar {
-  padding-bottom: calc(72px + env(safe-area-inset-bottom)) !important;
+  padding-bottom: calc(90px + env(safe-area-inset-bottom)) !important;
 }
 @media (max-width: 480px) {
   .topbar { padding-left: 10px; padding-right: 10px; gap: 6px; }
@@ -119,7 +130,8 @@ body.has-bottombar {
   .topbar-water-add { width: 40px; font-size: 18px; }
   .topbar-finance-btn { width: 40px; height: 38px; }
   .topbar-finance-icon { font-size: 18px; }
-  .bottombar-tab-icon { font-size: 22px; }
+  .bottombar-tab { padding: 8px 18px; }
+  .bottombar-tab-icon { font-size: 20px; }
   .bottombar-tab { font-size: 10px; }
 }
 html, body { -webkit-text-size-adjust: 100%; }
