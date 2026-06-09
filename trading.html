@@ -391,33 +391,29 @@ body::after {
 .photo-thumb-wrap:hover .photo-thumb-del { opacity: 1; }
 
 /* ===== Quote of the Day ===== */
-.quote-mark {
-  font-size: 88px; font-weight: 900; line-height: 0.75;
-  color: rgba(96,165,250,0.12);
-  position: absolute; top: 12px; left: 16px;
-  font-family: Georgia, "Times New Roman", serif;
-  pointer-events: none; user-select: none;
-  filter: drop-shadow(0 0 12px rgba(96,165,250,0.18));
-}
 .quote-text {
-  font-size: 15px; font-style: italic; line-height: 1.7;
-  color: var(--text-primary);
-  padding: 8px 8px 10px 42px;
-  position: relative; z-index: 1;
-  letter-spacing: 0.005em;
+  font-size: 16px; font-style: italic; line-height: 1.75;
+  text-align: center;
+  background: linear-gradient(160deg, #FFFFFF 0%, #93C5FD 100%);
+  -webkit-background-clip: text; background-clip: text;
+  -webkit-text-fill-color: transparent; color: transparent;
+  filter: drop-shadow(0 0 18px rgba(96,165,250,0.50));
+  letter-spacing: 0.01em;
+  padding: 4px 8px 14px;
 }
 .quote-attr {
   font-family: var(--font-mono);
   font-size: 11px; font-weight: 700;
   color: #60A5FA;
-  letter-spacing: 0.08em;
-  padding: 0 8px 0 42px;
-  filter: drop-shadow(0 0 6px rgba(96,165,250,0.35));
+  letter-spacing: 0.10em;
+  text-align: center;
+  filter: drop-shadow(0 0 8px rgba(96,165,250,0.45));
 }
 .quote-footer {
-  display: flex; align-items: center; justify-content: space-between;
+  display: flex; align-items: center; justify-content: center;
   margin-top: 14px; padding-top: 12px;
   border-top: 1px solid rgba(59,130,246,0.08);
+  gap: 10px;
 }
 .quote-day-label {
   font-family: var(--font-mono); font-size: 9px; font-weight: 600;
@@ -425,7 +421,7 @@ body::after {
   color: var(--text-tertiary);
 }
 .quote-dot {
-  width: 6px; height: 6px; border-radius: 50%;
+  width: 5px; height: 5px; border-radius: 50%;
   background: rgba(96,165,250,0.40);
   box-shadow: 0 0 8px rgba(96,165,250,0.35);
 }
@@ -593,8 +589,7 @@ body::after {
   <!-- ===== QUOTE OF THE DAY ===== -->
   <div class="section">
     <div class="section-title">Quote of the Day</div>
-    <div class="gm-card" style="position:relative;overflow:hidden">
-      <div class="quote-mark">"</div>
+    <div class="gm-card" style="text-align:center">
       <div class="quote-text" id="quoteText"></div>
       <div class="quote-attr" id="quoteAttr"></div>
       <div class="quote-footer">
