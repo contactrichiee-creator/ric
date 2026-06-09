@@ -494,13 +494,13 @@ body::after {
         <div class="form-field">
           <div class="form-label">Emotional State</div>
           <select class="gm-select" id="fEmotion">
-            <option value="calm">😌 Calm &amp; Focused</option>
-            <option value="anxious">😰 Anxious / Nervous</option>
-            <option value="frustrated">😤 Frustrated / Angry</option>
-            <option value="fomo">😬 FOMO</option>
-            <option value="confident">😎 Overconfident</option>
-            <option value="revenge">😡 Revenge Trading</option>
-            <option value="distracted">😶 Distracted</option>
+            <option value="calm">Calm &amp; Focused</option>
+            <option value="anxious">Anxious / Nervous</option>
+            <option value="frustrated">Frustrated / Angry</option>
+            <option value="fomo">FOMO</option>
+            <option value="confident">Overconfident</option>
+            <option value="revenge">Revenge Trading</option>
+            <option value="distracted">Distracted</option>
           </select>
         </div>
       </div>
@@ -577,7 +577,7 @@ body::after {
     return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/\n/g,'<br>');
   }
   function emotionLabel(e) {
-    const m = { calm:'😌 Calm', anxious:'😰 Anxious', frustrated:'😤 Frustrated', fomo:'😬 FOMO', confident:'😎 Overconfident', revenge:'😡 Revenge', distracted:'😶 Distracted' };
+    const m = { calm:'Calm', anxious:'Anxious', frustrated:'Frustrated', fomo:'FOMO', confident:'Overconfident', revenge:'Revenge', distracted:'Distracted' };
     return m[e] || e;
   }
 
