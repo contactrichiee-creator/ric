@@ -842,6 +842,10 @@ body::after {
         })
       });
       const data = await res.json();
+      if (!res.ok || data.type === 'error') {
+        const msg = (data.error && data.error.message) || ('API error ' + res.status);
+        throw new Error(msg);
+      }
       const text = (data.content && data.content[0] && data.content[0].text) || 'No response.';
 
       var all = loadTrades();
@@ -853,7 +857,7 @@ body::after {
       resultEl.innerHTML =
         '<div class="analysis-box" style="border-color:rgba(255,107,107,0.2)">' +
           '<div class="analysis-label" style="color:var(--danger)">Error</div>' +
-          'Analysis failed — check your API key and network.' +
+          (e.message || 'Analysis failed — check your API key and network.') +
         '</div>';
     } finally {
       btn.disabled = false; btn.textContent = '✦ Analyze';
