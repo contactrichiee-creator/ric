@@ -161,6 +161,71 @@ body::after {
 .gm-add:active { transform: translateY(0); }
 .gm-add:disabled { opacity: 0.45; cursor: not-allowed; transform: none; filter: none; }
 
+/* ===== Trading Calendar ===== */
+.cal-nav {
+  display: flex; align-items: center; justify-content: space-between;
+  margin-bottom: 18px;
+}
+.cal-month-label {
+  font-size: 17px; font-weight: 700; letter-spacing: -0.02em;
+  background: linear-gradient(160deg,#fff 0%,#93C5FD 100%);
+  -webkit-background-clip: text; background-clip: text;
+  -webkit-text-fill-color: transparent;
+  filter: drop-shadow(0 0 10px rgba(96,165,250,0.45));
+}
+.cal-nav-btn {
+  width: 36px; height: 36px;
+  display: flex; align-items: center; justify-content: center;
+  border: 1px solid rgba(59,130,246,0.20);
+  border-radius: 10px; background: rgba(59,130,246,0.06);
+  color: #93C5FD; font-size: 16px; cursor: pointer;
+  transition: background 0.15s, border-color 0.15s;
+}
+.cal-nav-btn:hover { background: rgba(59,130,246,0.14); border-color: rgba(59,130,246,0.40); }
+.cal-grid {
+  display: grid; grid-template-columns: repeat(7,1fr); gap: 3px;
+}
+.cal-dow {
+  text-align: center; font-size: 8.5px; font-weight: 700;
+  letter-spacing: 0.10em; text-transform: uppercase;
+  color: var(--text-tertiary); padding: 2px 0 8px;
+}
+.cal-day {
+  aspect-ratio: 1; border-radius: 9px;
+  display: flex; flex-direction: column;
+  align-items: center; justify-content: center; gap: 2px;
+  padding: 2px; border: 1px solid transparent;
+  transition: background 0.15s, border-color 0.15s;
+  min-width: 0;
+}
+.cal-day.empty { border: none; }
+.cal-date-num {
+  font-size: 12px; font-weight: 600;
+  color: var(--text-secondary); line-height: 1;
+}
+.cal-day.today .cal-date-num { color: #60A5FA; font-weight: 800; }
+.cal-day.today { border-color: rgba(59,130,246,0.35); background: rgba(59,130,246,0.06); }
+.cal-day.pos-day {
+  background: rgba(107,227,164,0.09);
+  border-color: rgba(107,227,164,0.22);
+  box-shadow: 0 0 10px rgba(107,227,164,0.10);
+}
+.cal-day.pos-day .cal-date-num { color: var(--text-primary); }
+.cal-day.neg-day {
+  background: rgba(255,107,107,0.09);
+  border-color: rgba(255,107,107,0.22);
+  box-shadow: 0 0 10px rgba(255,107,107,0.10);
+}
+.cal-day.neg-day .cal-date-num { color: var(--text-primary); }
+.cal-pnl {
+  font-size: clamp(6.5px,1.6vw,8.5px); font-weight: 700;
+  font-variant-numeric: tabular-nums;
+  overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
+  max-width: 100%; padding: 0 2px; line-height: 1;
+}
+.pos-day .cal-pnl { color: var(--success); }
+.neg-day .cal-pnl { color: var(--danger); }
+
 .gm-ghost {
   padding: 11px 18px;
   border: 1px solid rgba(255,255,255,0.10);
@@ -537,6 +602,19 @@ body::after {
     </div>
   </div>
 
+  <!-- ===== CALENDAR ===== -->
+  <div class="section">
+    <div class="section-title">Trading Calendar</div>
+    <div class="gm-card">
+      <div class="cal-nav">
+        <button class="cal-nav-btn" id="calPrev">&#8592;</button>
+        <span class="cal-month-label" id="calMonthLabel"></span>
+        <button class="cal-nav-btn" id="calNext">&#8594;</button>
+      </div>
+      <div class="cal-grid" id="calGrid"></div>
+    </div>
+  </div>
+
   <!-- ===== TRADE HISTORY ===== -->
   <div class="section">
     <div class="section-title">Trade History</div>
@@ -615,6 +693,57 @@ body::after {
       };
       reader.readAsDataURL(file);
     });
+  }
+
+  // ── Calendar ─────────────────────────────────────────────────────────────
+  var _calYear  = new Date().getFullYear();
+  var _calMonth = new Date().getMonth();
+  var _MONTH_NAMES = ['January','February','March','April','May','June','July','August','September','October','November','December'];
+
+  function renderCalendar() {
+    var trades = loadTrades();
+    var dayMap = {};
+    trades.forEach(function (t) {
+      if (!t.date) return;
+      dayMap[t.date] = (dayMap[t.date] || 0) + (t.pnl || 0);
+    });
+
+    var labelEl = document.getElementById('calMonthLabel');
+    var gridEl  = document.getElementById('calGrid');
+    if (!labelEl || !gridEl) return;
+    labelEl.textContent = _MONTH_NAMES[_calMonth] + ' ' + _calYear;
+
+    var td = new Date();
+    var todayKey = td.getFullYear() + '-' + String(td.getMonth()+1).padStart(2,'0') + '-' + String(td.getDate()).padStart(2,'0');
+    var firstDow   = new Date(_calYear, _calMonth, 1).getDay();
+    var daysInMonth= new Date(_calYear, _calMonth+1, 0).getDate();
+
+    var html = ['SUN','MON','TUE','WED','THU','FRI','SAT'].map(function (d) {
+      return '<div class="cal-dow">' + d + '</div>';
+    }).join('');
+
+    for (var i = 0; i < firstDow; i++) html += '<div class="cal-day empty"></div>';
+
+    for (var day = 1; day <= daysInMonth; day++) {
+      var key = _calYear + '-' + String(_calMonth+1).padStart(2,'0') + '-' + String(day).padStart(2,'0');
+      var pnl = dayMap[key];
+      var has = pnl !== undefined;
+      var cls = 'cal-day';
+      if (key === todayKey) cls += ' today';
+      if (has) cls += pnl >= 0 ? ' pos-day' : ' neg-day';
+
+      var pnlHtml = '';
+      if (has) {
+        var abs = Math.abs(pnl);
+        var sign = pnl < 0 ? '-$' : '$';
+        var fmt = abs >= 10000 ? sign + (abs/1000).toFixed(1) + 'k'
+                : abs >= 1000  ? sign + (abs/1000).toFixed(1) + 'k'
+                : sign + abs.toFixed(0);
+        pnlHtml = '<div class="cal-pnl">' + fmt + '</div>';
+      }
+      html += '<div class="' + cls + '"><div class="cal-date-num">' + day + '</div>' + pnlHtml + '</div>';
+    }
+    gridEl.innerHTML = html;
   }
 
   // ── Stats ────────────────────────────────────────────────────────────────
@@ -732,7 +861,7 @@ body::after {
         var all = loadTrades();
         saveTrades(all.filter(function (t) { return t.id !== btn.dataset.id; }));
         var ph = loadPhotos(); delete ph[btn.dataset.id]; savePhotos(ph);
-        renderTrades(); renderStats();
+        renderTrades(); renderStats(); renderCalendar();
       });
     });
     listEl.querySelectorAll('.trade-photo').forEach(function (img) {
@@ -974,7 +1103,7 @@ body::after {
       renderStagedThumbs();
     }
 
-    renderTrades(); renderStats();
+    renderTrades(); renderStats(); renderCalendar();
 
     document.getElementById('fPnl').value   = '';
     document.getElementById('fNotes').value = '';
@@ -1031,15 +1160,25 @@ body::after {
   // ── Boot ──────────────────────────────────────────────────────────────────
   renderStats();
   renderTrades();
+  renderCalendar();
   initForm();
   initBias();
+
+  document.getElementById('calPrev').addEventListener('click', function () {
+    _calMonth--; if (_calMonth < 0) { _calMonth = 11; _calYear--; }
+    renderCalendar();
+  });
+  document.getElementById('calNext').addEventListener('click', function () {
+    _calMonth++; if (_calMonth > 11) { _calMonth = 0; _calYear++; }
+    renderCalendar();
+  });
 
   document.addEventListener('DOMContentLoaded', function () {
     if (typeof initCloudSync !== 'function') return;
     initCloudSync({
       appKey: 'trading',
       syncedKeys: [STORE_KEY, BIAS_KEY], // photos are local-only
-      onApplied: function () { renderTrades(); renderStats(); }
+      onApplied: function () { renderTrades(); renderStats(); renderCalendar(); }
     });
   });
 
