@@ -697,15 +697,6 @@ body::after {
     </div>
   </div>
 
-  <!-- ===== TRADE HISTORY ===== -->
-  <div class="section">
-    <div class="section-title">Trade History</div>
-    <div class="gm-card">
-      <div class="trade-list" id="tradeList">
-        <div class="empty-state" id="tradeEmpty">No trades logged yet — add your first above.</div>
-      </div>
-    </div>
-  </div>
 
 </div><!-- /.page -->
 
@@ -915,7 +906,7 @@ body::after {
         var all = loadTrades();
         saveTrades(all.filter(function (t) { return t.id !== btn.dataset.id; }));
         var ph = loadPhotos(); delete ph[btn.dataset.id]; savePhotos(ph);
-        renderTrades(); renderStats(); renderCalendar();
+        renderStats(); renderCalendar();
         // Refresh or close modal
         var remaining = loadTrades().filter(function (t) { return t.date === dateKey; });
         if (!remaining.length) closeDayModal();
@@ -981,83 +972,6 @@ body::after {
   }
 
   // ── Trade list ────────────────────────────────────────────────────────────
-  function renderTrades() {
-    const trades  = loadTrades();
-    const photos  = loadPhotos();
-    const listEl  = document.getElementById('tradeList');
-    const emptyEl = document.getElementById('tradeEmpty');
-    listEl.querySelectorAll('.trade-item').forEach(function (e) { e.remove(); });
-    emptyEl.style.display = trades.length === 0 ? 'block' : 'none';
-
-    var sorted = trades.slice().sort(function (a,b) { return (b.date + b.time).localeCompare(a.date + a.time); });
-
-    sorted.forEach(function (trade) {
-      const pnl    = trade.pnl || 0;
-      const cls    = pnl > 0 ? 'trade-win' : pnl < 0 ? 'trade-loss' : 'trade-be';
-      const pnlCls = pnl > 0 ? 'pnl-pos'   : pnl < 0 ? 'pnl-neg'    : 'pnl-zero';
-
-      const div = document.createElement('div');
-      div.className  = 'trade-item ' + cls;
-      div.dataset.id = trade.id;
-
-      var tags = '';
-      if (trade.contracts > 1) tags += '<span class="trade-tag">' + trade.contracts + ' contracts</span>';
-      if (trade.setup)         tags += '<span class="trade-tag">' + trade.setup + '</span>';
-      if (trade.emotion)       tags += '<span class="trade-tag">' + emotionLabel(trade.emotion) + '</span>';
-
-      const tradePhotos = photos[trade.id] || [];
-      var photoHtml = '';
-      if (tradePhotos.length) {
-        photoHtml = '<div class="trade-photos">';
-        tradePhotos.forEach(function (src, i) {
-          photoHtml += '<img class="trade-photo" src="' + src + '" data-tradeid="' + trade.id + '" data-idx="' + i + '" alt="Trade screenshot">';
-        });
-        photoHtml += '</div>';
-      }
-
-      div.innerHTML =
-        '<div class="trade-top">' +
-          '<span class="trade-instrument">' + trade.instrument + '</span>' +
-          '<span class="trade-dir ' + trade.direction + '">' + trade.direction.toUpperCase() + '</span>' +
-          '<span class="trade-pnl ' + pnlCls + '">' + fmtPnl(pnl) + '</span>' +
-        '</div>' +
-        '<div class="trade-meta">' +
-          '<span>' + trade.date + (trade.time ? ' ' + trade.time : '') + '</span>' +
-          tags +
-        '</div>' +
-        (trade.notes ? '<div class="trade-notes">"' + trade.notes + '"</div>' : '') +
-        photoHtml +
-        '<div class="trade-actions">' +
-          '<button class="analyze-btn" data-id="' + trade.id + '" type="button">✦ Analyze</button>' +
-          '<button class="delete-btn"  data-id="' + trade.id + '" data-del="1" type="button" title="Delete">×</button>' +
-        '</div>' +
-        '<div class="analysis-result" id="ar-' + trade.id + '"></div>';
-
-      if (trade.analysis) {
-        var ar = div.querySelector('.analysis-result');
-        showAnalysis(ar, trade.analysis);
-      }
-
-      listEl.insertBefore(div, emptyEl);
-    });
-
-    // Wire buttons and photo clicks
-    listEl.querySelectorAll('.analyze-btn').forEach(function (btn) {
-      btn.addEventListener('click', function () { handleAnalyze(btn.dataset.id); });
-    });
-    listEl.querySelectorAll('[data-del]').forEach(function (btn) {
-      btn.addEventListener('click', function () {
-        var all = loadTrades();
-        saveTrades(all.filter(function (t) { return t.id !== btn.dataset.id; }));
-        var ph = loadPhotos(); delete ph[btn.dataset.id]; savePhotos(ph);
-        renderTrades(); renderStats(); renderCalendar();
-      });
-    });
-    listEl.querySelectorAll('.trade-photo').forEach(function (img) {
-      img.addEventListener('click', function () { openLightbox(img.src); });
-    });
-  }
-
   function showAnalysis(container, text) {
     container.innerHTML =
       '<div class="analysis-box">' +
@@ -1293,7 +1207,7 @@ body::after {
       renderStagedThumbs();
     }
 
-    renderTrades(); renderStats(); renderCalendar();
+    renderStats(); renderCalendar();
 
     document.getElementById('fPnl').value   = '';
     document.getElementById('fNotes').value = '';
@@ -1349,7 +1263,6 @@ body::after {
 
   // ── Boot ──────────────────────────────────────────────────────────────────
   renderStats();
-  renderTrades();
   renderCalendar();
   initForm();
   initBias();
@@ -1377,7 +1290,7 @@ body::after {
     initCloudSync({
       appKey: 'trading',
       syncedKeys: [STORE_KEY, BIAS_KEY], // photos are local-only
-      onApplied: function () { renderTrades(); renderStats(); renderCalendar(); }
+      onApplied: function () { renderStats(); renderCalendar(); }
     });
   });
 
