@@ -106,22 +106,24 @@ body::after {
 /* ===== Stats ===== */
 .stat-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(100px, 1fr));
-  gap: 10px;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 8px;
 }
 .stat {
   background: rgba(255,255,255,0.035);
   border: 1px solid rgba(255,255,255,0.06);
-  border-radius: 12px; padding: 12px 14px;
+  border-radius: 12px; padding: 12px 10px;
+  min-width: 0;
 }
 .stat-num {
-  font-size: 20px; font-weight: 700;
+  font-size: clamp(13px, 3.2vw, 20px); font-weight: 700;
   font-variant-numeric: tabular-nums;
-  letter-spacing: -0.03em; color: var(--text-primary); line-height: 1;
+  letter-spacing: -0.03em; color: var(--text-primary); line-height: 1.1;
+  word-break: break-all;
 }
 .stat-num.pos { color: var(--success); }
 .stat-num.neg { color: var(--danger); }
-.stat-label { margin-top: 5px; font-size: 10px; font-weight: 600; letter-spacing: 0.08em; text-transform: uppercase; color: var(--text-tertiary); }
+.stat-label { margin-top: 5px; font-size: clamp(8px, 2vw, 10px); font-weight: 600; letter-spacing: 0.06em; text-transform: uppercase; color: var(--text-tertiary); }
 
 /* ===== Form ===== */
 .gm-input {
