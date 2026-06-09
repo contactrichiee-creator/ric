@@ -96,7 +96,7 @@ body::after {
   overflow: hidden;
 }
 
-/* ===== Stats grid ===== */
+/* ===== Stats ===== */
 .stat-grid {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(100px, 1fr));
@@ -110,14 +110,13 @@ body::after {
 .stat-num {
   font-size: 20px; font-weight: 700;
   font-variant-numeric: tabular-nums;
-  letter-spacing: -0.03em;
-  color: var(--text-primary); line-height: 1;
+  letter-spacing: -0.03em; color: var(--text-primary); line-height: 1;
 }
 .stat-num.pos { color: var(--success); }
 .stat-num.neg { color: var(--danger); }
 .stat-label { margin-top: 5px; font-size: 10px; font-weight: 600; letter-spacing: 0.08em; text-transform: uppercase; color: var(--text-tertiary); }
 
-/* ===== Form elements ===== */
+/* ===== Form ===== */
 .gm-input {
   width: 100%; padding: 11px 14px;
   border: 1px solid rgba(255,255,255,0.08);
@@ -147,8 +146,7 @@ body::after {
   color: #0A0A0B; font-family: inherit; font-size: 13px; font-weight: 700;
   cursor: pointer;
   box-shadow: inset 0 1px 0 rgba(255,255,255,0.9), 0 2px 8px rgba(0,0,0,0.35), 0 8px 22px rgba(0,0,0,0.25);
-  transition: transform 0.1s, filter 0.15s;
-  white-space: nowrap;
+  transition: transform 0.1s, filter 0.15s; white-space: nowrap;
 }
 .gm-add:hover { filter: brightness(1.06); transform: translateY(-1px); }
 .gm-add:active { transform: translateY(0); }
@@ -160,25 +158,18 @@ body::after {
   border-radius: 12px; background: rgba(255,255,255,0.04);
   color: var(--text-primary);
   font-family: inherit; font-size: 13px; font-weight: 600; cursor: pointer;
-  transition: background 0.15s, border-color 0.15s;
-  white-space: nowrap;
+  transition: background 0.15s, border-color 0.15s; white-space: nowrap;
 }
 .gm-ghost:hover { background: rgba(255,255,255,0.07); border-color: rgba(255,255,255,0.18); }
 
-/* ===== Form grid ===== */
-.form-row {
-  display: grid;
-  gap: 10px;
-  margin-bottom: 10px;
-}
+.form-row { display: grid; gap: 10px; margin-bottom: 10px; }
 .form-row-4 { grid-template-columns: 1fr 1fr 1fr 1fr; }
+.form-row-3 { grid-template-columns: 1fr 1fr 1fr; }
 .form-row-2 { grid-template-columns: 1fr 1fr; }
-.form-row-1 { grid-template-columns: 1fr; }
-
 .form-field { display: flex; flex-direction: column; gap: 5px; }
 .form-label { font-size: 10px; font-weight: 700; letter-spacing: 0.12em; text-transform: uppercase; color: var(--text-tertiary); }
 
-/* ===== Direction toggle ===== */
+/* Direction toggle */
 .dir-toggle {
   display: flex; border-radius: 12px;
   border: 1px solid rgba(255,255,255,0.08);
@@ -193,22 +184,55 @@ body::after {
 .dir-toggle button.active-long  { background: rgba(107,227,164,0.18); color: var(--success); }
 .dir-toggle button.active-short { background: rgba(255,107,107,0.18); color: var(--danger); }
 
-/* ===== P&L preview ===== */
-.pnl-preview {
-  display: flex; align-items: center; gap: 16px;
-  padding: 12px 16px; border-radius: 12px;
-  background: rgba(255,255,255,0.035);
-  border: 1px solid rgba(255,255,255,0.06);
-  margin-bottom: 10px;
+/* ===== Photo upload ===== */
+.photo-zone {
+  border: 1px dashed rgba(255,255,255,0.14);
+  border-radius: 12px;
+  padding: 14px;
+  transition: border-color 0.2s, background 0.2s;
 }
-.pnl-preview-block { display: flex; flex-direction: column; gap: 3px; }
-.pnl-preview-label { font-size: 9.5px; font-weight: 700; letter-spacing: 0.12em; text-transform: uppercase; color: var(--text-tertiary); }
-.pnl-val { font-family: var(--font-mono); font-size: 18px; font-weight: 700; font-variant-numeric: tabular-nums; line-height: 1; }
-.pnl-pos  { color: var(--success); }
-.pnl-neg  { color: var(--danger); }
-.pnl-zero { color: var(--text-tertiary); }
-.divider-v { width: 1px; height: 36px; background: rgba(255,255,255,0.07); flex-shrink: 0; }
-.pnl-note { font-size: 11px; color: var(--warning); margin-left: auto; }
+.photo-zone.drag-over {
+  border-color: rgba(129,140,248,0.5);
+  background: rgba(129,140,248,0.06);
+}
+.photo-zone-hint {
+  display: flex; align-items: center; gap: 10px;
+  color: var(--text-tertiary); font-size: 12px;
+}
+.photo-add-btn {
+  display: inline-flex; align-items: center; gap: 6px;
+  padding: 7px 14px; border-radius: 8px;
+  border: 1px solid rgba(255,255,255,0.10);
+  background: rgba(255,255,255,0.04);
+  color: var(--text-secondary); font-family: inherit; font-size: 12px; font-weight: 600;
+  cursor: pointer; transition: background 0.15s, border-color 0.15s;
+  flex-shrink: 0;
+}
+.photo-add-btn:hover { background: rgba(255,255,255,0.07); border-color: rgba(255,255,255,0.18); }
+.photo-thumbs {
+  display: flex; flex-wrap: wrap; gap: 8px;
+  margin-top: 10px;
+}
+.photo-thumb-wrap {
+  position: relative;
+  width: 72px; height: 72px;
+  border-radius: 8px; overflow: hidden;
+  border: 1px solid rgba(255,255,255,0.10);
+  flex-shrink: 0;
+}
+.photo-thumb-wrap img {
+  width: 100%; height: 100%;
+  object-fit: cover; display: block;
+}
+.photo-thumb-del {
+  position: absolute; top: 3px; right: 3px;
+  width: 18px; height: 18px; border-radius: 50%;
+  background: rgba(0,0,0,0.7); color: #fff;
+  border: 0; font-size: 11px; line-height: 1;
+  cursor: pointer; display: flex; align-items: center; justify-content: center;
+  opacity: 0; transition: opacity 0.15s;
+}
+.photo-thumb-wrap:hover .photo-thumb-del { opacity: 1; }
 
 /* ===== Market bias ===== */
 .bias-row { display: flex; gap: 12px; align-items: flex-start; }
@@ -231,7 +255,6 @@ body::after {
   border: 1px solid rgba(255,255,255,0.06);
   border-left-width: 3px;
   border-radius: 14px; padding: 14px 16px;
-  transition: background 0.2s;
 }
 .trade-item.trade-win  { border-left-color: var(--success); }
 .trade-item.trade-loss { border-left-color: var(--danger); }
@@ -249,11 +272,13 @@ body::after {
 }
 .trade-dir.long  { background: rgba(107,227,164,0.12); color: var(--success); }
 .trade-dir.short { background: rgba(255,107,107,0.12); color: var(--danger); }
-.trade-prices { font-family: var(--font-mono); font-size: 12px; color: var(--text-secondary); }
 .trade-pnl {
   font-family: var(--font-mono); font-size: 15px; font-weight: 700;
   font-variant-numeric: tabular-nums; margin-left: auto;
 }
+.pnl-pos  { color: var(--success); }
+.pnl-neg  { color: var(--danger); }
+.pnl-zero { color: var(--text-tertiary); }
 .trade-meta {
   display: flex; gap: 8px; flex-wrap: wrap; align-items: center;
   margin-top: 8px; font-size: 11px; color: var(--text-tertiary);
@@ -263,8 +288,37 @@ body::after {
   border-radius: 99px; background: rgba(255,255,255,0.05); color: var(--text-secondary);
 }
 .trade-notes { margin-top: 6px; font-size: 12px; color: var(--text-tertiary); font-style: italic; }
-.trade-actions { margin-top: 10px; display: flex; gap: 8px; align-items: center; }
 
+/* Trade photo gallery */
+.trade-photos {
+  display: flex; flex-wrap: wrap; gap: 8px;
+  margin-top: 10px;
+}
+.trade-photo {
+  width: 80px; height: 80px; border-radius: 8px;
+  object-fit: cover; cursor: pointer;
+  border: 1px solid rgba(255,255,255,0.10);
+  transition: transform 0.15s, border-color 0.15s;
+}
+.trade-photo:hover { transform: scale(1.04); border-color: rgba(255,255,255,0.25); }
+
+/* Lightbox */
+.lightbox {
+  display: none; position: fixed; inset: 0; z-index: 200;
+  background: rgba(0,0,0,0.88);
+  align-items: center; justify-content: center;
+  backdrop-filter: blur(8px);
+}
+.lightbox.open { display: flex; }
+.lightbox img {
+  max-width: min(94vw, 1200px);
+  max-height: 90vh;
+  border-radius: 10px;
+  box-shadow: 0 24px 80px rgba(0,0,0,0.7);
+  cursor: zoom-out;
+}
+
+.trade-actions { margin-top: 10px; display: flex; gap: 8px; align-items: center; }
 .analyze-btn {
   padding: 6px 14px; border-radius: 8px;
   border: 1px solid rgba(255,255,255,0.10); background: rgba(255,255,255,0.04);
@@ -280,7 +334,7 @@ body::after {
 }
 .delete-btn:hover { color: var(--danger); background: rgba(255,107,107,0.08); }
 
-/* ===== Analysis box ===== */
+/* Analysis box */
 .analysis-box {
   margin-top: 10px; padding: 12px 14px;
   border-radius: 10px;
@@ -302,31 +356,32 @@ body::after {
 @media (max-width: 640px) {
   body { padding: max(20px, env(safe-area-inset-top)) max(14px, env(safe-area-inset-right)) 50px max(14px, env(safe-area-inset-left)); }
   .gm-card { padding: 16px; }
-  .form-row-4 { grid-template-columns: 1fr 1fr; }
+  .form-row-4, .form-row-3 { grid-template-columns: 1fr 1fr; }
   .form-row-2 { grid-template-columns: 1fr; }
   .bias-row   { flex-direction: column; }
   .bias-btns  { flex-direction: row; }
 }
 @media (max-width: 400px) {
-  .form-row-4 { grid-template-columns: 1fr; }
+  .form-row-4, .form-row-3 { grid-template-columns: 1fr; }
 }
 </style>
 </head>
 <body>
+
+<div class="lightbox" id="lightbox"><img id="lightboxImg" src="" alt="Trade screenshot"></div>
+
 <div class="page">
 
   <h1 class="dash-title">Trading Journal</h1>
 
-  <!-- ===== TODAY'S PERFORMANCE ===== -->
+  <!-- ===== PERFORMANCE ===== -->
   <div class="section">
     <div class="section-title">Performance</div>
     <div class="gm-card">
       <div style="display:flex;align-items:flex-start;justify-content:space-between;flex-wrap:wrap;gap:12px;margin-bottom:14px">
         <div>
           <div style="font-size:10.5px;font-weight:700;letter-spacing:.18em;text-transform:uppercase;color:var(--text-tertiary);margin-bottom:6px" id="statsDate">Today</div>
-          <div style="display:flex;align-items:baseline;gap:6px">
-            <span style="font-size:42px;font-weight:700;font-variant-numeric:tabular-nums;letter-spacing:-.045em;color:var(--text-primary);line-height:1" id="statsDayPnl">$0</span>
-          </div>
+          <span style="font-size:42px;font-weight:700;font-variant-numeric:tabular-nums;letter-spacing:-.045em;color:var(--text-primary);line-height:1" id="statsDayPnl">$0</span>
         </div>
         <div style="display:flex;flex-direction:column;align-items:flex-end;gap:6px">
           <span style="font-family:var(--font-mono);font-size:13px;color:var(--text-secondary)" id="statsWinRate">— win rate</span>
@@ -363,6 +418,7 @@ body::after {
     <div class="section-title">Log a Trade</div>
     <div class="gm-card">
 
+      <!-- Row 1: date, time, instrument, direction -->
       <div class="form-row form-row-4">
         <div class="form-field">
           <div class="form-label">Date</div>
@@ -398,43 +454,19 @@ body::after {
         </div>
       </div>
 
-      <div class="form-row form-row-4">
-        <div class="form-field">
-          <div class="form-label">Entry</div>
-          <input class="gm-input" type="number" id="fEntry" placeholder="0.00" step="0.01">
-        </div>
-        <div class="form-field">
-          <div class="form-label">Exit</div>
-          <input class="gm-input" type="number" id="fExit" placeholder="0.00" step="0.01">
-        </div>
-        <div class="form-field">
-          <div class="form-label">Stop Loss</div>
-          <input class="gm-input" type="number" id="fStop" placeholder="0.00" step="0.01">
-        </div>
+      <!-- Row 2: contracts + P&L -->
+      <div class="form-row form-row-3">
         <div class="form-field">
           <div class="form-label">Contracts</div>
           <input class="gm-input" type="number" id="fContracts" placeholder="1" min="1" value="1">
         </div>
+        <div class="form-field" style="grid-column:span 2">
+          <div class="form-label">P&amp;L — positive for win, negative for loss</div>
+          <input class="gm-input" type="number" id="fPnl" placeholder="+350.00 or -175.00" step="0.01">
+        </div>
       </div>
 
-      <div class="pnl-preview" id="pnlPreview">
-        <div class="pnl-preview-block">
-          <div class="pnl-preview-label">P&amp;L</div>
-          <div class="pnl-val pnl-zero" id="pnlPreviewVal">—</div>
-        </div>
-        <div class="divider-v"></div>
-        <div class="pnl-preview-block">
-          <div class="pnl-preview-label">R:R Ratio</div>
-          <div class="pnl-val pnl-zero" id="rrPreviewVal">—</div>
-        </div>
-        <div class="divider-v"></div>
-        <div class="pnl-preview-block">
-          <div class="pnl-preview-label">Points</div>
-          <div class="pnl-val pnl-zero" id="ptsPreviewVal">—</div>
-        </div>
-        <span class="pnl-note" id="pnlNote"></span>
-      </div>
-
+      <!-- Row 3: setup + emotion -->
       <div class="form-row form-row-2">
         <div class="form-field">
           <div class="form-label">Setup</div>
@@ -467,11 +499,25 @@ body::after {
         </div>
       </div>
 
-      <div class="form-row form-row-1" style="margin-bottom:14px">
+      <!-- Notes -->
+      <div class="form-row" style="margin-bottom:10px">
         <div class="form-field">
           <div class="form-label">Notes</div>
-          <input class="gm-input" type="text" id="fNotes" placeholder="What did you see? Why did you enter? What went right or wrong?">
+          <input class="gm-input" type="text" id="fNotes" placeholder="What did you see? Why did you take this trade? What went right or wrong?">
         </div>
+      </div>
+
+      <!-- Photos -->
+      <div style="margin-bottom:14px">
+        <div class="form-label" style="margin-bottom:5px">Trade Screenshots</div>
+        <div class="photo-zone" id="photoZone">
+          <div class="photo-zone-hint">
+            <button type="button" class="photo-add-btn" id="photoAddBtn">📷 Add Photos</button>
+            <span>or drag &amp; drop images here</span>
+          </div>
+          <div class="photo-thumbs" id="photoThumbs"></div>
+        </div>
+        <input type="file" id="photoInput" accept="image/*" multiple style="display:none">
       </div>
 
       <div style="display:flex;gap:10px;align-items:center;flex-wrap:wrap">
@@ -501,24 +547,9 @@ body::after {
   // Paste your Anthropic key here to enable AI trade analysis
   const ANTHROPIC_API_KEY = '';
 
-  // ── Instrument specs (point value per full contract) ──────────────────
-  const SPECS = {
-    ES:  { pt: 50,    tick: 0.25, tval: 12.50 },
-    NQ:  { pt: 20,    tick: 0.25, tval: 5.00  },
-    YM:  { pt: 5,     tick: 1,    tval: 5.00  },
-    RTY: { pt: 50,    tick: 0.10, tval: 5.00  },
-    CL:  { pt: 1000,  tick: 0.01, tval: 10.00 },
-    GC:  { pt: 100,   tick: 0.10, tval: 10.00 },
-    MES: { pt: 5,     tick: 0.25, tval: 1.25  },
-    MNQ: { pt: 2,     tick: 0.25, tval: 0.50  },
-    MYM: { pt: 0.5,   tick: 1,    tval: 0.50  },
-    M2K: { pt: 5,     tick: 0.10, tval: 0.50  },
-    MGC: { pt: 10,    tick: 0.10, tval: 1.00  },
-    NG:  { pt: 10000, tick: 0.001,tval: 10.00 },
-  };
-
-  const STORE_KEY = 'trading_journal_v1';
-  const BIAS_KEY  = 'trading_bias_v1';
+  const STORE_KEY  = 'trading_journal_v1';
+  const PHOTOS_KEY = 'trading_photos_v1'; // local-only, not synced
+  const BIAS_KEY   = 'trading_bias_v1';
 
   // ── Helpers ────────────────────────────────────────────────────────────
   function pad2(n) { return String(n).padStart(2, '0'); }
@@ -533,132 +564,143 @@ body::after {
   function uid() { return Date.now().toString(36) + Math.random().toString(36).slice(2, 7); }
   function fmtPnl(n) {
     if (n === 0) return '$0.00';
-    const s = Math.abs(n) >= 10000 ? Math.abs(n).toFixed(0) : Math.abs(n).toFixed(2);
-    return (n < 0 ? '-$' : '+$') + Number(s).toLocaleString('en-US', { minimumFractionDigits: n >= 10000 ? 0 : 2 });
+    const abs = Math.abs(n);
+    const s   = abs >= 10000 ? abs.toFixed(0) : abs.toFixed(2);
+    return (n < 0 ? '-$' : '+$') + Number(s).toLocaleString('en-US', { minimumFractionDigits: abs >= 10000 ? 0 : 2 });
   }
   function escHtml(s) {
-    return String(s)
-      .replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;')
-      .replace(/\n/g, '<br>');
+    return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/\n/g,'<br>');
   }
   function emotionLabel(e) {
-    const m = { calm: '😌 Calm', anxious: '😰 Anxious', frustrated: '😤 Frustrated', fomo: '😬 FOMO', confident: '😎 Overconfident', revenge: '😡 Revenge', distracted: '😶 Distracted' };
+    const m = { calm:'😌 Calm', anxious:'😰 Anxious', frustrated:'😤 Frustrated', fomo:'😬 FOMO', confident:'😎 Overconfident', revenge:'😡 Revenge', distracted:'😶 Distracted' };
     return m[e] || e;
   }
 
   // ── Storage ─────────────────────────────────────────────────────────────
-  function loadTrades() { try { return JSON.parse(localStorage.getItem(STORE_KEY)) || []; } catch (e) { return []; } }
+  function loadTrades()  { try { return JSON.parse(localStorage.getItem(STORE_KEY))  || []; } catch(e) { return []; } }
   function saveTrades(t) { localStorage.setItem(STORE_KEY, JSON.stringify(t)); }
-  function loadBias()   { try { return JSON.parse(localStorage.getItem(BIAS_KEY)) || {}; }  catch (e) { return {}; } }
+  function loadPhotos()  { try { return JSON.parse(localStorage.getItem(PHOTOS_KEY)) || {}; } catch(e) { return {}; } }
+  function savePhotos(p) {
+    // Photos never go through initCloudSync — save directly without triggering sync
+    try { localStorage.__rawSet ? localStorage.__rawSet(PHOTOS_KEY, JSON.stringify(p)) : localStorage.setItem(PHOTOS_KEY, JSON.stringify(p)); } catch(e) {}
+  }
+  function loadBias()   { try { return JSON.parse(localStorage.getItem(BIAS_KEY)) || {}; } catch(e) { return {}; } }
   function saveBias(b)  { localStorage.setItem(BIAS_KEY, JSON.stringify(b)); }
 
-  // ── P&L / R:R ───────────────────────────────────────────────────────────
-  function calcPnl(inst, dir, entry, exit, contracts) {
-    const s = SPECS[inst];
-    if (!s || !entry || !exit || !contracts) return null;
-    return Math.round((exit - entry) * (dir === 'long' ? 1 : -1) * s.pt * contracts * 100) / 100;
-  }
-  function calcRR(dir, entry, exit, stop) {
-    if (!entry || !exit || !stop) return null;
-    const risk   = Math.abs(entry - stop);
-    const reward = Math.abs(exit - entry);
-    if (risk === 0) return null;
-    return Math.round((reward / risk) * 10) / 10;
-  }
-  function calcPoints(dir, entry, exit) {
-    if (!entry || !exit) return null;
-    return Math.round((exit - entry) * (dir === 'long' ? 1 : -1) * 100) / 100;
+  // ── Image compression ───────────────────────────────────────────────────
+  function compressImage(file) {
+    return new Promise(function (resolve) {
+      const reader = new FileReader();
+      reader.onload = function (e) {
+        const img = new Image();
+        img.onload = function () {
+          const MAX = 900;
+          const scale = Math.min(1, MAX / Math.max(img.width, img.height));
+          const canvas = document.createElement('canvas');
+          canvas.width  = Math.round(img.width  * scale);
+          canvas.height = Math.round(img.height * scale);
+          const ctx = canvas.getContext('2d');
+          ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
+          resolve(canvas.toDataURL('image/jpeg', 0.72));
+        };
+        img.src = e.target.result;
+      };
+      reader.readAsDataURL(file);
+    });
   }
 
   // ── Stats ────────────────────────────────────────────────────────────────
-  function computeStats() {
-    const trades = loadTrades();
-    const td = todayStr();
-    const todayTrades = trades.filter(t => t.date === td);
-    const dayPnl  = todayTrades.reduce((s, t) => s + (t.pnl || 0), 0);
-    const allPnl  = trades.reduce((s, t) => s + (t.pnl || 0), 0);
-    const wins    = trades.filter(t => (t.pnl || 0) > 0);
-    const losses  = trades.filter(t => (t.pnl || 0) < 0);
-    const winRate = trades.length > 0 ? Math.round(wins.length / trades.length * 100) : null;
-    const avgWin  = wins.length   > 0 ? wins.reduce((s, t) => s + t.pnl, 0) / wins.length : null;
-    const avgLoss = losses.length > 0 ? losses.reduce((s, t) => s + t.pnl, 0) / losses.length : null;
-
-    const byDay = {};
-    trades.forEach(t => { byDay[t.date] = (byDay[t.date] || 0) + (t.pnl || 0); });
-    const days    = Object.values(byDay);
-    const bestDay = days.length > 0 ? Math.max(...days) : null;
-
-    return { dayPnl, allPnl, winRate, avgWin, avgLoss, bestDay, todayCount: todayTrades.length, total: trades.length };
-  }
-
   function renderStats() {
-    const s = computeStats();
-    const d = new Date();
+    const trades = loadTrades();
+    const td     = todayStr();
+    const today  = trades.filter(function (t) { return t.date === td; });
+    const dayPnl = today.reduce(function (s,t) { return s + (t.pnl||0); }, 0);
+    const allPnl = trades.reduce(function (s,t) { return s + (t.pnl||0); }, 0);
+    const wins   = trades.filter(function (t) { return (t.pnl||0) > 0; });
+    const losses = trades.filter(function (t) { return (t.pnl||0) < 0; });
+    const winRate = trades.length > 0 ? Math.round(wins.length / trades.length * 100) : null;
+    const avgWin  = wins.length   > 0 ? wins.reduce(function(s,t){return s+t.pnl;},0) / wins.length : null;
+    const avgLoss = losses.length > 0 ? losses.reduce(function(s,t){return s+t.pnl;},0) / losses.length : null;
+    const byDay   = {};
+    trades.forEach(function (t) { byDay[t.date] = (byDay[t.date]||0) + (t.pnl||0); });
+    const days    = Object.values(byDay);
+    const bestDay = days.length > 0 ? Math.max.apply(null, days) : null;
+
+    const d  = new Date();
     const mo = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'][d.getMonth()];
     document.getElementById('statsDate').textContent = mo + ' ' + d.getDate();
 
     const dayEl = document.getElementById('statsDayPnl');
-    dayEl.textContent = fmtPnl(s.dayPnl);
-    dayEl.style.color = s.dayPnl > 0 ? 'var(--success)' : s.dayPnl < 0 ? 'var(--danger)' : 'var(--text-primary)';
+    dayEl.textContent = fmtPnl(dayPnl);
+    dayEl.style.color = dayPnl > 0 ? 'var(--success)' : dayPnl < 0 ? 'var(--danger)' : 'var(--text-primary)';
 
-    document.getElementById('statsWinRate').textContent = s.winRate !== null ? s.winRate + '% win rate' : '— win rate';
-    document.getElementById('statsTrades').textContent  = s.todayCount + ' trade' + (s.todayCount !== 1 ? 's' : '') + ' today · ' + s.total + ' total';
+    document.getElementById('statsWinRate').textContent = winRate !== null ? winRate + '% win rate' : '— win rate';
+    document.getElementById('statsTrades').textContent  = today.length + ' trade' + (today.length !== 1 ? 's' : '') + ' today · ' + trades.length + ' total';
 
     const tpEl = document.getElementById('statTotalPnl');
-    tpEl.textContent = fmtPnl(s.allPnl);
-    tpEl.className   = 'stat-num ' + (s.allPnl > 0 ? 'pos' : s.allPnl < 0 ? 'neg' : '');
+    tpEl.textContent = fmtPnl(allPnl);
+    tpEl.className   = 'stat-num ' + (allPnl > 0 ? 'pos' : allPnl < 0 ? 'neg' : '');
 
     const awEl = document.getElementById('statAvgWin');
-    awEl.textContent = s.avgWin  !== null ? fmtPnl(s.avgWin)  : '—';
-    awEl.className   = 'stat-num ' + (s.avgWin !== null ? 'pos' : '');
+    awEl.textContent = avgWin  !== null ? fmtPnl(avgWin)  : '—';
+    awEl.className   = 'stat-num ' + (avgWin  !== null ? 'pos' : '');
 
     const alEl = document.getElementById('statAvgLoss');
-    alEl.textContent = s.avgLoss !== null ? fmtPnl(s.avgLoss) : '—';
-    alEl.className   = 'stat-num ' + (s.avgLoss !== null ? 'neg' : '');
+    alEl.textContent = avgLoss !== null ? fmtPnl(avgLoss) : '—';
+    alEl.className   = 'stat-num ' + (avgLoss !== null ? 'neg' : '');
 
     const bdEl = document.getElementById('statBestDay');
-    bdEl.textContent = s.bestDay !== null ? fmtPnl(s.bestDay) : '—';
-    bdEl.className   = 'stat-num ' + (s.bestDay !== null && s.bestDay > 0 ? 'pos' : '');
+    bdEl.textContent = bestDay !== null ? fmtPnl(bestDay) : '—';
+    bdEl.className   = 'stat-num ' + (bestDay !== null && bestDay > 0 ? 'pos' : '');
   }
 
-  // ── Trade List ───────────────────────────────────────────────────────────
+  // ── Trade list ────────────────────────────────────────────────────────────
   function renderTrades() {
     const trades  = loadTrades();
+    const photos  = loadPhotos();
     const listEl  = document.getElementById('tradeList');
     const emptyEl = document.getElementById('tradeEmpty');
-    listEl.querySelectorAll('.trade-item').forEach(e => e.remove());
+    listEl.querySelectorAll('.trade-item').forEach(function (e) { e.remove(); });
     emptyEl.style.display = trades.length === 0 ? 'block' : 'none';
 
-    const sorted = [...trades].sort((a, b) => (b.date + b.time).localeCompare(a.date + a.time));
+    var sorted = trades.slice().sort(function (a,b) { return (b.date + b.time).localeCompare(a.date + a.time); });
 
     sorted.forEach(function (trade) {
-      const pnl     = trade.pnl || 0;
-      const cls     = pnl > 0 ? 'trade-win' : pnl < 0 ? 'trade-loss' : 'trade-be';
-      const pnlCls  = pnl > 0 ? 'pnl-pos'   : pnl < 0 ? 'pnl-neg'    : 'pnl-zero';
-      const pnlStr  = fmtPnl(pnl);
+      const pnl    = trade.pnl || 0;
+      const cls    = pnl > 0 ? 'trade-win' : pnl < 0 ? 'trade-loss' : 'trade-be';
+      const pnlCls = pnl > 0 ? 'pnl-pos'   : pnl < 0 ? 'pnl-neg'    : 'pnl-zero';
 
       const div = document.createElement('div');
-      div.className = 'trade-item ' + cls;
+      div.className  = 'trade-item ' + cls;
       div.dataset.id = trade.id;
 
-      let tags = '';
+      var tags = '';
       if (trade.contracts > 1) tags += '<span class="trade-tag">' + trade.contracts + ' contracts</span>';
       if (trade.setup)         tags += '<span class="trade-tag">' + trade.setup + '</span>';
       if (trade.emotion)       tags += '<span class="trade-tag">' + emotionLabel(trade.emotion) + '</span>';
-      if (trade.rr)            tags += '<span class="trade-tag">R:R 1:' + trade.rr + '</span>';
+
+      const tradePhotos = photos[trade.id] || [];
+      var photoHtml = '';
+      if (tradePhotos.length) {
+        photoHtml = '<div class="trade-photos">';
+        tradePhotos.forEach(function (src, i) {
+          photoHtml += '<img class="trade-photo" src="' + src + '" data-tradeid="' + trade.id + '" data-idx="' + i + '" alt="Trade screenshot">';
+        });
+        photoHtml += '</div>';
+      }
 
       div.innerHTML =
         '<div class="trade-top">' +
           '<span class="trade-instrument">' + trade.instrument + '</span>' +
           '<span class="trade-dir ' + trade.direction + '">' + trade.direction.toUpperCase() + '</span>' +
-          '<span class="trade-prices">' + trade.entry + ' → ' + trade.exit + '</span>' +
-          '<span class="trade-pnl ' + pnlCls + '">' + pnlStr + '</span>' +
+          '<span class="trade-pnl ' + pnlCls + '">' + fmtPnl(pnl) + '</span>' +
         '</div>' +
         '<div class="trade-meta">' +
           '<span>' + trade.date + (trade.time ? ' ' + trade.time : '') + '</span>' +
           tags +
         '</div>' +
         (trade.notes ? '<div class="trade-notes">"' + trade.notes + '"</div>' : '') +
+        photoHtml +
         '<div class="trade-actions">' +
           '<button class="analyze-btn" data-id="' + trade.id + '" type="button">✦ Analyze</button>' +
           '<button class="delete-btn"  data-id="' + trade.id + '" data-del="1" type="button" title="Delete">×</button>' +
@@ -666,23 +708,27 @@ body::after {
         '<div class="analysis-result" id="ar-' + trade.id + '"></div>';
 
       if (trade.analysis) {
-        const ar = div.querySelector('.analysis-result');
+        var ar = div.querySelector('.analysis-result');
         showAnalysis(ar, trade.analysis);
       }
 
       listEl.insertBefore(div, emptyEl);
     });
 
+    // Wire buttons and photo clicks
     listEl.querySelectorAll('.analyze-btn').forEach(function (btn) {
       btn.addEventListener('click', function () { handleAnalyze(btn.dataset.id); });
     });
     listEl.querySelectorAll('[data-del]').forEach(function (btn) {
       btn.addEventListener('click', function () {
-        const trades = loadTrades();
-        saveTrades(trades.filter(function (t) { return t.id !== btn.dataset.id; }));
-        renderTrades();
-        renderStats();
+        var all = loadTrades();
+        saveTrades(all.filter(function (t) { return t.id !== btn.dataset.id; }));
+        var ph = loadPhotos(); delete ph[btn.dataset.id]; savePhotos(ph);
+        renderTrades(); renderStats();
       });
+    });
+    listEl.querySelectorAll('.trade-photo').forEach(function (img) {
+      img.addEventListener('click', function () { openLightbox(img.src); });
     });
   }
 
@@ -694,7 +740,16 @@ body::after {
       '</div>';
   }
 
-  // ── AI Analysis ──────────────────────────────────────────────────────────
+  // ── Lightbox ──────────────────────────────────────────────────────────────
+  function openLightbox(src) {
+    document.getElementById('lightboxImg').src = src;
+    document.getElementById('lightbox').classList.add('open');
+  }
+  document.getElementById('lightbox').addEventListener('click', function () {
+    this.classList.remove('open');
+  });
+
+  // ── AI Analysis ───────────────────────────────────────────────────────────
   async function handleAnalyze(tradeId) {
     const trades = loadTrades();
     const trade  = trades.find(function (t) { return t.id === tradeId; });
@@ -708,76 +763,67 @@ body::after {
       resultEl.innerHTML =
         '<div class="analysis-box" style="border-color:rgba(242,192,99,0.25)">' +
           '<div class="analysis-label" style="color:var(--warning)">⚠ API Key Required</div>' +
-          'Open trading.html and set <code>ANTHROPIC_API_KEY</code> at the top of the &lt;script&gt; to enable AI analysis.' +
+          'Open trading.html and set <code>ANTHROPIC_API_KEY</code> at the top of the script to enable AI analysis.' +
         '</div>';
       return;
     }
 
-    btn.disabled = true;
-    btn.textContent = 'Analyzing…';
+    btn.disabled = true; btn.textContent = 'Analyzing…';
     resultEl.innerHTML =
       '<div class="analysis-box">' +
         '<div class="analysis-thinking"><div class="analysis-dot"></div> Reading your trade…</div>' +
       '</div>';
 
-    const bias   = loadBias();
-    const today  = bias[todayStr()] || {};
-    const recent = [...trades]
-      .sort(function (a, b) { return (b.date + b.time).localeCompare(a.date + a.time); })
-      .slice(0, 10);
-
-    const spec = SPECS[trade.instrument] || {};
+    const bias        = loadBias();
+    const todayBias   = bias[todayStr()] || {};
+    const recent      = trades.slice().sort(function (a,b) { return (b.date+b.time).localeCompare(a.date+a.time); }).slice(0, 10);
     const todayTrades = trades.filter(function (t) { return t.date === trade.date; });
+    const photos      = loadPhotos();
+    const hasPhotos   = (photos[trade.id] || []).length > 0;
 
     const tradeBlock =
       'Trade details:\n' +
-      '  Instrument: ' + trade.instrument + ' ($' + spec.pt + '/point)\n' +
+      '  Instrument: ' + trade.instrument + '\n' +
       '  Date / Time: ' + trade.date + ' ' + (trade.time || '') + '\n' +
       '  Direction: ' + trade.direction.toUpperCase() + '\n' +
-      '  Entry: ' + trade.entry + '  Exit: ' + trade.exit + (trade.stop ? '  Stop: ' + trade.stop : '  Stop: NOT SET') + '\n' +
       '  Contracts: ' + trade.contracts + '\n' +
-      '  P&L: ' + fmtPnl(trade.pnl) + (trade.rr ? '  R:R achieved: 1:' + trade.rr : '') + '\n' +
+      '  P&L: ' + fmtPnl(trade.pnl) + '\n' +
       '  Setup: ' + (trade.setup || 'not specified') + '\n' +
       '  Emotional state: ' + emotionLabel(trade.emotion || 'calm') + '\n' +
       '  Notes: ' + (trade.notes || 'none') + '\n' +
-      (today.bias ? '  Day bias: ' + today.bias + '\n' : '') +
-      (today.notes ? '  Market notes: ' + today.notes + '\n' : '') +
-      '  Trades taken on this date: ' + todayTrades.length + '\n\n' +
-      'Last 10 trades (for pattern analysis):\n' +
+      '  Trade screenshots attached: ' + (hasPhotos ? 'yes' : 'no') + '\n' +
+      (todayBias.bias  ? '  Day bias: ' + todayBias.bias + '\n' : '') +
+      (todayBias.notes ? '  Market notes: ' + todayBias.notes + '\n' : '') +
+      '  Total trades on this date: ' + todayTrades.length + '\n\n' +
+      'Last 10 trades (pattern detection):\n' +
       recent.map(function (t) {
-        return '  ' + t.date + ' ' + (t.time || '') + ' | ' + t.instrument + ' ' + t.direction.toUpperCase() +
-          ' | ' + t.entry + '→' + t.exit + ' | ' + fmtPnl(t.pnl || 0) +
-          ' | ' + (t.setup || '—') + ' | ' + (t.emotion || 'calm');
+        return '  ' + t.date + ' ' + (t.time||'') + ' | ' + t.instrument + ' ' + t.direction.toUpperCase() +
+          ' | ' + fmtPnl(t.pnl||0) + ' | ' + (t.setup||'—') + ' | ' + (t.emotion||'calm');
       }).join('\n');
 
     const system =
-      'You are a brutally honest futures trading coach with 20 years of CME pit and screen experience. ' +
-      'You analyze trades for a retail day trader and call out exactly what went wrong and why.\n\n' +
-      'Futures specs you know cold:\n' +
-      '- /ES $50/pt, 0.25 tick. Typical RTH range 20-60pts. Key levels: VWAP, overnight H/L, weekly pivot.\n' +
-      '- /NQ $20/pt, 0.25 tick. More volatile than ES, can run 150+ pts on trend days. Tech-news sensitive.\n' +
-      '- /YM $5/pt, 1 tick. Slowest equity index, good for beginners.\n' +
-      '- /RTY $50/pt, 0.10 tick. Most volatile equity index, leads risk-off. Thin liquidity = wide spreads.\n' +
-      '- /CL $1000/pt, 0.01 tick. Moves hard on EIA inventory Wed 10:30 ET and OPEC headlines.\n' +
-      '- /GC $100/pt, 0.10 tick. Safe haven, inversely correlated with USD. Moves on Fed speak.\n' +
-      '- Micro contracts (/MES /MNQ /MYM /M2K /MGC): 1/10th the size, same tick structure.\n\n' +
-      'Red flags you ALWAYS call out if present:\n' +
-      '1. No stop loss set — non-negotiable for risk management.\n' +
-      '2. Negative R:R (risked more than potential reward — should be minimum 1:1.5).\n' +
-      '3. Emotional states: revenge, fomo, frustrated — these predict losses.\n' +
-      '4. Overtrading: 5+ trades in one session is usually emotional, not strategic.\n' +
-      '5. Same mistake repeated in recent history.\n' +
-      '6. Trading against the day bias without reason.\n' +
-      '7. Holding a loser past the planned stop (implied by entry vs stop vs exit mismatch).\n\n' +
-      'Good habits you acknowledge:\n' +
-      '- R:R >= 2:1, calm state, defined stop, setup matches bias, under 4 trades/day.\n\n' +
-      'Response rules:\n' +
-      '- Under 140 words.\n' +
-      '- NO bullet points, NO headers. Plain paragraphs.\n' +
-      '- Be direct and specific. Name the exact prices, ratios, or patterns you see.\n' +
-      '- End with one specific actionable fix.\n' +
-      '- If the trade was good, say so briefly then still give one improvement.\n' +
-      '- Do NOT be encouraging for bad trades. Honesty > comfort.';
+      'You are a brutally honest futures trading coach with 20 years of CME experience. ' +
+      'Analyze this trade and give direct, specific feedback based on the available data.\n\n' +
+      'Futures knowledge:\n' +
+      '- /ES ($50/pt): equity index, RTH 9:30–4pm ET, typical daily range 20-60pts\n' +
+      '- /NQ ($20/pt): higher volatility than ES, tech-sensitive, can run 150+ pts on trend days\n' +
+      '- /YM ($5/pt): slowest equity index, tracks Dow 30\n' +
+      '- /RTY ($50/pt): most volatile equity index, leads risk-off moves, thin liquidity\n' +
+      '- /CL ($1000/pt): crude oil, big moves on Wed EIA inventory 10:30 ET\n' +
+      '- /GC ($100/pt): gold, safe haven, inversely correlated with USD\n' +
+      '- Micro versions (/MES /MNQ /MYM /M2K /MGC) are 1/10th the size\n\n' +
+      'Red flags you always call out:\n' +
+      '1. Emotional states: revenge, fomo, frustrated, overconfident — these reliably predict losses\n' +
+      '2. Overtrading: 5+ trades in one session without a clear edge\n' +
+      '3. Repeated losses on the same setup — suggests the setup is broken or being misread\n' +
+      '4. Trading against the stated day bias without a reason\n' +
+      '5. Same emotional state appearing across multiple losing trades\n' +
+      '6. Outsized loss on a high-contract trade — size should match edge, not emotion\n\n' +
+      'Good habits to acknowledge briefly: calm state, appropriate size, solid setup, under 4 trades/day.\n\n' +
+      'Rules: Under 130 words. No bullet points or headers — plain paragraphs. ' +
+      'Be specific: name the instrument, P&L amount, or pattern you see in the history. ' +
+      'Call out what is bad first. End with one concrete, actionable fix. ' +
+      'Do NOT soften bad trades with encouragement.';
 
     try {
       const res = await fetch('https://api.anthropic.com/v1/messages', {
@@ -790,7 +836,7 @@ body::after {
         },
         body: JSON.stringify({
           model: 'claude-opus-4-8',
-          max_tokens: 400,
+          max_tokens: 350,
           system: system,
           messages: [{ role: 'user', content: tradeBlock }]
         })
@@ -798,8 +844,8 @@ body::after {
       const data = await res.json();
       const text = (data.content && data.content[0] && data.content[0].text) || 'No response.';
 
-      const all = loadTrades();
-      const idx = all.findIndex(function (t) { return t.id === tradeId; });
+      var all = loadTrades();
+      var idx = all.findIndex(function (t) { return t.id === tradeId; });
       if (idx >= 0) { all[idx].analysis = text; saveTrades(all); }
 
       showAnalysis(resultEl, text);
@@ -807,119 +853,120 @@ body::after {
       resultEl.innerHTML =
         '<div class="analysis-box" style="border-color:rgba(255,107,107,0.2)">' +
           '<div class="analysis-label" style="color:var(--danger)">Error</div>' +
-          'Analysis failed — check your API key and network connection.' +
+          'Analysis failed — check your API key and network.' +
         '</div>';
     } finally {
-      btn.disabled  = false;
-      btn.textContent = '✦ Analyze';
+      btn.disabled = false; btn.textContent = '✦ Analyze';
     }
   }
 
-  // ── Form ─────────────────────────────────────────────────────────────────
-  var formDir = 'long';
+  // ── Form + photos ─────────────────────────────────────────────────────────
+  var formDir      = 'long';
+  var stagedPhotos = []; // array of base64 strings waiting to be saved with the trade
 
   function initForm() {
     document.getElementById('fDate').value      = todayStr();
     document.getElementById('fTime').value      = nowTimeStr();
     document.getElementById('fContracts').value = '1';
 
+    // Direction toggle
     const longBtn  = document.getElementById('fLong');
     const shortBtn = document.getElementById('fShort');
     longBtn.addEventListener('click', function () {
       formDir = 'long';
-      longBtn.className  = 'active-long';
-      shortBtn.className = '';
-      updatePreview();
+      longBtn.className = 'active-long'; shortBtn.className = '';
     });
     shortBtn.addEventListener('click', function () {
       formDir = 'short';
-      longBtn.className  = '';
-      shortBtn.className = 'active-short';
-      updatePreview();
+      longBtn.className = ''; shortBtn.className = 'active-short';
     });
 
-    ['fEntry','fExit','fStop','fContracts','fInstrument'].forEach(function (id) {
-      document.getElementById(id).addEventListener('input', updatePreview);
+    // Photo upload — button and drag-drop
+    const photoInput = document.getElementById('photoInput');
+    document.getElementById('photoAddBtn').addEventListener('click', function () { photoInput.click(); });
+    photoInput.addEventListener('change', function () { handleFiles(Array.from(photoInput.files)); photoInput.value = ''; });
+
+    const zone = document.getElementById('photoZone');
+    zone.addEventListener('dragover', function (e) { e.preventDefault(); zone.classList.add('drag-over'); });
+    zone.addEventListener('dragleave', function () { zone.classList.remove('drag-over'); });
+    zone.addEventListener('drop', function (e) {
+      e.preventDefault(); zone.classList.remove('drag-over');
+      handleFiles(Array.from(e.dataTransfer.files).filter(function (f) { return f.type.startsWith('image/'); }));
     });
 
     document.getElementById('addTradeBtn').addEventListener('click', addTrade);
     document.getElementById('clearFormBtn').addEventListener('click', clearForm);
   }
 
-  function updatePreview() {
-    const inst = document.getElementById('fInstrument').value;
-    const entry = parseFloat(document.getElementById('fEntry').value);
-    const exit  = parseFloat(document.getElementById('fExit').value);
-    const stop  = parseFloat(document.getElementById('fStop').value);
-    const qty   = parseInt(document.getElementById('fContracts').value) || 1;
-
-    const pnl = calcPnl(inst, formDir, entry, exit, qty);
-    const rr  = calcRR(formDir, entry, exit, stop);
-    const pts = calcPoints(formDir, entry, exit);
-
-    const pnlEl  = document.getElementById('pnlPreviewVal');
-    const rrEl   = document.getElementById('rrPreviewVal');
-    const ptsEl  = document.getElementById('ptsPreviewVal');
-    const noteEl = document.getElementById('pnlNote');
-
-    if (pnl !== null) {
-      pnlEl.textContent = fmtPnl(pnl);
-      pnlEl.className   = 'pnl-val ' + (pnl > 0 ? 'pnl-pos' : pnl < 0 ? 'pnl-neg' : 'pnl-zero');
-    } else {
-      pnlEl.textContent = '—'; pnlEl.className = 'pnl-val pnl-zero';
+  async function handleFiles(files) {
+    for (var i = 0; i < files.length; i++) {
+      var b64 = await compressImage(files[i]);
+      stagedPhotos.push(b64);
     }
+    renderStagedThumbs();
+  }
 
-    if (rr !== null) {
-      rrEl.textContent = '1:' + rr;
-      rrEl.className   = 'pnl-val ' + (rr >= 2 ? 'pnl-pos' : rr >= 1 ? '' : 'pnl-neg');
-      noteEl.textContent = rr < 1 ? '⚠ R:R below 1:1' : '';
-    } else {
-      rrEl.textContent = '—'; rrEl.className = 'pnl-val pnl-zero';
-      noteEl.textContent = '';
-    }
-
-    if (pts !== null) {
-      ptsEl.textContent = (pts > 0 ? '+' : '') + pts;
-      ptsEl.className   = 'pnl-val ' + (pts > 0 ? 'pnl-pos' : pts < 0 ? 'pnl-neg' : 'pnl-zero');
-    } else {
-      ptsEl.textContent = '—'; ptsEl.className = 'pnl-val pnl-zero';
-    }
+  function renderStagedThumbs() {
+    const container = document.getElementById('photoThumbs');
+    container.innerHTML = '';
+    stagedPhotos.forEach(function (src, idx) {
+      const wrap = document.createElement('div');
+      wrap.className = 'photo-thumb-wrap';
+      wrap.innerHTML =
+        '<img src="' + src + '" alt="staged">' +
+        '<button class="photo-thumb-del" data-idx="' + idx + '" type="button" title="Remove">×</button>';
+      container.appendChild(wrap);
+    });
+    container.querySelectorAll('.photo-thumb-del').forEach(function (btn) {
+      btn.addEventListener('click', function () {
+        stagedPhotos.splice(parseInt(btn.dataset.idx), 1);
+        renderStagedThumbs();
+      });
+    });
   }
 
   function addTrade() {
-    const date  = document.getElementById('fDate').value;
-    const time  = document.getElementById('fTime').value;
-    const inst  = document.getElementById('fInstrument').value;
-    const entry = parseFloat(document.getElementById('fEntry').value);
-    const exit  = parseFloat(document.getElementById('fExit').value);
-    const stop  = parseFloat(document.getElementById('fStop').value) || null;
-    const qty   = parseInt(document.getElementById('fContracts').value) || 1;
-    const setup   = document.getElementById('fSetup').value;
-    const emotion = document.getElementById('fEmotion').value;
-    const notes   = document.getElementById('fNotes').value.trim();
-    const statusEl = document.getElementById('formStatus');
+    const date      = document.getElementById('fDate').value;
+    const time      = document.getElementById('fTime').value;
+    const inst      = document.getElementById('fInstrument').value;
+    const contracts = parseInt(document.getElementById('fContracts').value) || 1;
+    const pnlRaw    = parseFloat(document.getElementById('fPnl').value);
+    const setup     = document.getElementById('fSetup').value;
+    const emotion   = document.getElementById('fEmotion').value;
+    const notes     = document.getElementById('fNotes').value.trim();
+    const statusEl  = document.getElementById('formStatus');
 
-    if (!date || isNaN(entry) || isNaN(exit)) {
-      statusEl.textContent = 'Date, entry and exit are required.';
+    if (!date || isNaN(pnlRaw)) {
+      statusEl.textContent = 'Date and P&L are required.';
       statusEl.style.color = 'var(--danger)';
       setTimeout(function () { statusEl.textContent = ''; }, 2500);
       return;
     }
 
-    const pnl = calcPnl(inst, formDir, entry, exit, qty);
-    const rr  = stop ? calcRR(formDir, entry, exit, stop) : null;
+    const trade = {
+      id: uid(), date, time,
+      instrument: inst, direction: formDir,
+      contracts, pnl: Math.round(pnlRaw * 100) / 100,
+      setup, emotion, notes, analysis: null
+    };
 
-    const trade = { id: uid(), date, time, instrument: inst, direction: formDir, entry, exit, stop, contracts: qty, pnl: pnl || 0, rr, setup, emotion, notes, analysis: null };
-    const all = loadTrades();
+    var all = loadTrades();
     all.push(trade);
     saveTrades(all);
 
-    renderTrades();
-    renderStats();
+    if (stagedPhotos.length) {
+      var ph = loadPhotos();
+      ph[trade.id] = stagedPhotos.slice();
+      savePhotos(ph);
+      stagedPhotos = [];
+      renderStagedThumbs();
+    }
 
-    ['fEntry','fExit','fStop','fNotes'].forEach(function (id) { document.getElementById(id).value = ''; });
-    document.getElementById('fTime').value = nowTimeStr();
-    updatePreview();
+    renderTrades(); renderStats();
+
+    document.getElementById('fPnl').value   = '';
+    document.getElementById('fNotes').value = '';
+    document.getElementById('fTime').value  = nowTimeStr();
 
     statusEl.textContent = 'Trade logged ✓';
     statusEl.style.color = 'var(--success)';
@@ -927,7 +974,7 @@ body::after {
   }
 
   function clearForm() {
-    ['fEntry','fExit','fStop','fNotes'].forEach(function (id) { document.getElementById(id).value = ''; });
+    ['fPnl','fNotes'].forEach(function (id) { document.getElementById(id).value = ''; });
     document.getElementById('fDate').value      = todayStr();
     document.getElementById('fTime').value      = nowTimeStr();
     document.getElementById('fContracts').value = '1';
@@ -936,15 +983,16 @@ body::after {
     formDir = 'long';
     document.getElementById('fLong').className  = 'active-long';
     document.getElementById('fShort').className = '';
-    updatePreview();
+    stagedPhotos = [];
+    renderStagedThumbs();
   }
 
   // ── Market Bias ───────────────────────────────────────────────────────────
   function initBias() {
-    const saved    = loadBias();
-    const todayB   = saved[todayStr()] || {};
-    const notesEl  = document.getElementById('biasNotes');
-    notesEl.value  = todayB.notes || '';
+    const saved   = loadBias();
+    const todayB  = saved[todayStr()] || {};
+    const notesEl = document.getElementById('biasNotes');
+    notesEl.value = todayB.notes || '';
     setBiasActive(todayB.bias || 'neutral');
 
     document.getElementById('biasBull').addEventListener('click', function () { saveTodayBias('bullish'); setBiasActive('bullish'); });
@@ -952,21 +1000,18 @@ body::after {
     document.getElementById('biasBear').addEventListener('click', function () { saveTodayBias('bearish'); setBiasActive('bearish'); });
     notesEl.addEventListener('input', function () { saveTodayBias(currentBias()); });
   }
-
   function currentBias() {
     if (document.getElementById('biasBull').classList.contains('active')) return 'bullish';
     if (document.getElementById('biasBear').classList.contains('active')) return 'bearish';
     return 'neutral';
   }
-
   function setBiasActive(val) {
     document.getElementById('biasBull').classList.toggle('active', val === 'bullish');
     document.getElementById('biasNeut').classList.toggle('active', val === 'neutral');
     document.getElementById('biasBear').classList.toggle('active', val === 'bearish');
   }
-
   function saveTodayBias(bias) {
-    const all = loadBias();
+    var all = loadBias();
     all[todayStr()] = { bias: bias, notes: document.getElementById('biasNotes').value };
     saveBias(all);
   }
@@ -981,7 +1026,7 @@ body::after {
     if (typeof initCloudSync !== 'function') return;
     initCloudSync({
       appKey: 'trading',
-      syncedKeys: [STORE_KEY, BIAS_KEY],
+      syncedKeys: [STORE_KEY, BIAS_KEY], // photos are local-only
       onApplied: function () { renderTrades(); renderStats(); }
     });
   });
