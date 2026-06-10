@@ -623,8 +623,8 @@ body::after {
             <div style="position:relative;width:160px;height:160px;flex-shrink:0">
               <svg viewBox="0 0 100 100" width="160" height="160" style="display:block;overflow:visible;transform:rotate(-90deg)">
                 <circle cx="50" cy="50" r="38" fill="none" stroke="rgba(255,255,255,0.06)" stroke-width="9"/>
-                <circle id="donutLoss" cx="50" cy="50" r="38" fill="none" stroke="#FF6B6B" stroke-width="9" stroke-linecap="round" stroke-dasharray="0 239" style="transition:stroke-dasharray 0.8s cubic-bezier(0.22,1,0.36,1);filter:drop-shadow(0 0 8px rgba(255,107,107,0.7))"/>
-                <circle id="donutWin" cx="50" cy="50" r="38" fill="none" stroke="#6BE3A4" stroke-width="9" stroke-linecap="round" stroke-dasharray="0 239" stroke-dashoffset="0" style="transition:stroke-dasharray 0.8s cubic-bezier(0.22,1,0.36,1) 0.1s,stroke-dashoffset 0.8s cubic-bezier(0.22,1,0.36,1) 0.1s;filter:drop-shadow(0 0 8px rgba(107,227,164,0.7))"/>
+                <circle id="donutLoss" cx="50" cy="50" r="38" fill="none" stroke="#FF6B6B" stroke-width="9" stroke-dasharray="0 239" style="transition:stroke-dasharray 0.8s cubic-bezier(0.22,1,0.36,1);filter:drop-shadow(0 0 8px rgba(255,107,107,0.7))"/>
+                <circle id="donutWin" cx="50" cy="50" r="38" fill="none" stroke="#6BE3A4" stroke-width="9" stroke-dasharray="0 239" stroke-dashoffset="0" style="transition:stroke-dasharray 0.8s cubic-bezier(0.22,1,0.36,1) 0.1s,stroke-dashoffset 0.8s cubic-bezier(0.22,1,0.36,1) 0.1s;filter:drop-shadow(0 0 8px rgba(107,227,164,0.7))"/>
               </svg>
               <div style="position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;pointer-events:none">
                 <span id="donutPct" style="font-size:26px;font-weight:800;letter-spacing:-.04em;color:#fff;line-height:1;text-shadow:0 0 18px rgba(107,227,164,0.9),0 0 36px rgba(107,227,164,0.45)">—</span>
@@ -1255,16 +1255,16 @@ body::after {
     bdEl.className   = 'stat-num ' + (bestDay !== null && bestDay > 0 ? 'pos' : '');
 
     // Donut chart
-    const circ = 2 * Math.PI * 38; // ≈238.76
-    const wPct = trades.length > 0 ? wins.length / trades.length : 0;
-    const lPct = trades.length > 0 ? losses.length / trades.length : 0;
-    const wArc = wPct * circ;
-    const lArc = lPct * circ;
-    const gap  = trades.length > 0 ? 4 : 0;
-    document.getElementById('donutWin').setAttribute('stroke-dasharray', wArc > 0 ? (wArc - gap) + ' ' + (circ - wArc + gap) : '0 ' + circ);
+    const circ = 2 * Math.PI * 38;
+    const wArc = trades.length > 0 ? (wins.length / trades.length) * circ : 0;
+    const lArc = trades.length > 0 ? (losses.length / trades.length) * circ : 0;
+    const gap  = (wArc > 0 && lArc > 0) ? 6 : 0; // gap only when both segments exist
+    const wDash = wArc > 0 ? (wArc - gap).toFixed(2) + ' ' + (circ - wArc + gap).toFixed(2) : '0 ' + circ;
+    const lDash = lArc > 0 ? (lArc - gap).toFixed(2) + ' ' + (circ - lArc + gap).toFixed(2) : '0 ' + circ;
+    document.getElementById('donutWin').setAttribute('stroke-dasharray', wDash);
     document.getElementById('donutWin').setAttribute('stroke-dashoffset', '0');
-    document.getElementById('donutLoss').setAttribute('stroke-dasharray', lArc > 0 ? (lArc - gap) + ' ' + (circ - lArc + gap) : '0 ' + circ);
-    document.getElementById('donutLoss').setAttribute('stroke-dashoffset', -(wArc) + '');
+    document.getElementById('donutLoss').setAttribute('stroke-dasharray', lDash);
+    document.getElementById('donutLoss').setAttribute('stroke-dashoffset', (-wArc).toFixed(2));
     document.getElementById('donutPct').textContent = winRate !== null ? winRate + '%' : '—';
     document.getElementById('donutWinCount').textContent = wins.length;
     document.getElementById('donutLossCount').textContent = losses.length;
