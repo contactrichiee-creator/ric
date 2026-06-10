@@ -314,6 +314,18 @@ body::after {
   flex-shrink: 0; margin-left: 12px;
 }
 .day-modal-close:hover { background: rgba(255,107,107,0.12); border-color: rgba(255,107,107,0.30); color: var(--danger); }
+.dm-chart-wrap {
+  margin: 14px 0 4px;
+  padding: 12px 10px 8px;
+  background: rgba(255,255,255,0.025);
+  border: 1px solid rgba(255,255,255,0.07);
+  border-radius: 14px;
+}
+.dm-chart-label {
+  font-size: 9px; font-weight: 700; letter-spacing: .14em; text-transform: uppercase;
+  color: var(--text-tertiary); margin-bottom: 6px;
+}
+.dm-chart-svg { display: block; width: 100%; overflow: visible; }
 .day-modal-body {
   overflow-y: auto; padding: 16px 16px 32px;
   overscroll-behavior: contain;
@@ -1025,11 +1037,133 @@ body::after {
       img.addEventListener('click', function () { openLightbox(img.src); });
     });
 
+    // Monthly P&L chart
+    var chartHtml = buildMonthChart(dateKey);
+    if (chartHtml) {
+      var chartEl = document.createElement('div');
+      chartEl.innerHTML = chartHtml;
+      body.appendChild(chartEl.firstChild);
+    }
+
     document.getElementById('dayModalBg').classList.add('open');
   }
 
   function closeDayModal() {
     document.getElementById('dayModalBg').classList.remove('open');
+  }
+
+  function buildMonthChart(dateKey) {
+    var parts = dateKey.split('-');
+    var year = +parts[0], month = +parts[1], clickedDay = +parts[2];
+    var daysInMonth = new Date(year, month, 0).getDate();
+    var trades = loadTrades();
+    var prefix = year + '-' + String(month).padStart(2,'0') + '-';
+    var dayPnl = {};
+    trades.forEach(function(t) {
+      if (t.date && t.date.indexOf(prefix) === 0) {
+        var d = +t.date.split('-')[2];
+        dayPnl[d] = (dayPnl[d] || 0) + (t.pnl || 0);
+      }
+    });
+    if (!Object.keys(dayPnl).length) return '';
+
+    var td = new Date();
+    var isCurrent = (td.getFullYear() === year && td.getMonth() + 1 === month);
+    var maxDay = isCurrent ? td.getDate() : daysInMonth;
+
+    var cumulative = 0, pts = [];
+    for (var d = 1; d <= maxDay; d++) {
+      if (dayPnl[d] !== undefined) cumulative += dayPnl[d];
+      pts.push({ day: d, cum: cumulative });
+    }
+    if (pts.length < 2) return '';
+
+    var W = 440, H = 108, pL = 40, pR = 10, pT = 14, pB = 22;
+    var cW = W - pL - pR, cH = H - pT - pB;
+    var vals = pts.map(function(p){return p.cum;});
+    var minV = Math.min(0, Math.min.apply(null,vals));
+    var maxV = Math.max(0, Math.max.apply(null,vals));
+    var pad = (maxV - minV) * 0.12 || 40;
+    minV -= pad; maxV += pad;
+    var vR = maxV - minV;
+
+    function xp(day) { return pL + ((day-1)/(maxDay-1||1)) * cW; }
+    function yp(v)   { return pT + (1-(v-minV)/vR) * cH; }
+
+    var coords = pts.map(function(p){ return {x:xp(p.day),y:yp(p.cum),day:p.day,cum:p.cum}; });
+
+    // Catmull-Rom → cubic bezier smooth path
+    var pathD = 'M'+coords[0].x.toFixed(1)+','+coords[0].y.toFixed(1);
+    for (var i = 1; i < coords.length; i++) {
+      var p0=coords[Math.max(0,i-2)], p1=coords[i-1], p2=coords[i], p3=coords[Math.min(coords.length-1,i+1)];
+      var c1x=(p1.x+(p2.x-p0.x)/6).toFixed(1), c1y=(p1.y+(p2.y-p0.y)/6).toFixed(1);
+      var c2x=(p2.x-(p3.x-p1.x)/6).toFixed(1), c2y=(p2.y-(p3.y-p1.y)/6).toFixed(1);
+      pathD += ' C'+c1x+','+c1y+' '+c2x+','+c2y+' '+p2.x.toFixed(1)+','+p2.y.toFixed(1);
+    }
+
+    var lastC = coords[coords.length-1];
+    var fillD = pathD+' L'+lastC.x.toFixed(1)+','+(pT+cH)+' L'+pL+','+(pT+cH)+' Z';
+    var zeroY = yp(0).toFixed(1);
+
+    // Color based on month total
+    var monthTotal = lastC.cum;
+    var lineClr = monthTotal >= 0 ? '#6BE3A4' : '#FF6B6B';
+    var glowClr = monthTotal >= 0 ? 'rgba(107,227,164,0.7)' : 'rgba(255,107,107,0.7)';
+    var uid = dateKey.replace(/-/g,'');
+
+    // Clicked day coord
+    var cc = null;
+    coords.forEach(function(c){ if(c.day===clickedDay) cc=c; });
+
+    // Y-axis labels (3 ticks)
+    var yTicks = [minV+vR*0.15, minV+vR*0.5, minV+vR*0.85].map(function(v){
+      var abs=Math.abs(v), lbl=(v<0?'-$':'$')+(abs>=1000?(abs/1000).toFixed(1)+'k':abs.toFixed(0));
+      return '<text x="'+(pL-4).toFixed(0)+'" y="'+(yp(v)+3.5).toFixed(1)+'" text-anchor="end" font-size="7.5" fill="rgba(255,255,255,0.25)" font-family="ui-monospace,monospace">'+lbl+'</text>';
+    }).join('');
+
+    // X-axis labels (4 evenly spaced day numbers)
+    var xStep = Math.max(1, Math.floor(maxDay/4));
+    var xTicks = '';
+    for (var xl = 1; xl <= maxDay; xl += xStep) {
+      xTicks += '<text x="'+xp(xl).toFixed(1)+'" y="'+(pT+cH+13)+'" text-anchor="middle" font-size="7.5" fill="rgba(255,255,255,0.22)" font-family="ui-monospace,monospace">'+xl+'</text>';
+    }
+
+    // Tooltip label at clicked point
+    var tooltip = '';
+    if (cc) {
+      var absC=Math.abs(cc.cum), cumLbl=(cc.cum>=0?'+$':'-$')+(absC>=1000?(absC/1000).toFixed(1)+'k':absC.toFixed(0));
+      var tx=cc.x.toFixed(1), ty=(cc.y-10).toFixed(1);
+      tooltip = '<text x="'+tx+'" y="'+ty+'" text-anchor="middle" font-size="8.5" font-weight="700" fill="'+lineClr+'" font-family="ui-monospace,monospace">'+cumLbl+'</text>';
+    }
+
+    return '<div class="dm-chart-wrap">'
+      +'<div class="dm-chart-label">Monthly P&amp;L Curve</div>'
+      +'<svg class="dm-chart-svg" viewBox="0 0 '+W+' '+H+'">'
+      +'<defs>'
+      +'<linearGradient id="dmFill'+uid+'" x1="0" y1="0" x2="0" y2="1">'
+      +'<stop offset="0%" stop-color="'+lineClr+'" stop-opacity="0.28"/>'
+      +'<stop offset="100%" stop-color="'+lineClr+'" stop-opacity="0.01"/>'
+      +'</linearGradient>'
+      +'<filter id="dmGlow'+uid+'" x="-20%" y="-80%" width="140%" height="260%">'
+      +'<feGaussianBlur in="SourceGraphic" stdDeviation="2" result="blur"/>'
+      +'<feMerge><feMergeNode in="blur"/><feMergeNode in="SourceGraphic"/></feMerge>'
+      +'</filter>'
+      +'</defs>'
+      // zero line
+      +'<line x1="'+pL+'" y1="'+zeroY+'" x2="'+(W-pR)+'" y2="'+zeroY+'" stroke="rgba(255,255,255,0.07)" stroke-width="0.5"/>'
+      // fill
+      +'<path d="'+fillD+'" fill="url(#dmFill'+uid+')"/>'
+      // line
+      +'<path d="'+pathD+'" fill="none" stroke="'+lineClr+'" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" filter="url(#dmGlow'+uid+')"/>'
+      // clicked day vertical
+      +(cc?'<line x1="'+cc.x.toFixed(1)+'" y1="'+pT+'" x2="'+cc.x.toFixed(1)+'" y2="'+(pT+cH)+'" stroke="rgba(255,255,255,0.14)" stroke-width="0.8" stroke-dasharray="3,2"/>':'')
+      // dot outer ring + inner dot
+      +(cc?'<circle cx="'+cc.x.toFixed(1)+'" cy="'+cc.y.toFixed(1)+'" r="4" fill="'+lineClr+'" opacity="0.35" filter="url(#dmGlow'+uid+')"/>':'')
+      +(cc?'<circle cx="'+cc.x.toFixed(1)+'" cy="'+cc.y.toFixed(1)+'" r="2.8" fill="'+lineClr+'" filter="url(#dmGlow'+uid+')"/>':'')
+      +(cc?'<circle cx="'+cc.x.toFixed(1)+'" cy="'+cc.y.toFixed(1)+'" r="1.4" fill="#fff"/>':'')
+      // labels
+      +yTicks+xTicks+tooltip
+      +'</svg></div>';
   }
 
   // ── Stats ────────────────────────────────────────────────────────────────
