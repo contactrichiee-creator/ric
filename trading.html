@@ -136,8 +136,8 @@ body::after {
   letter-spacing: -0.03em; color: var(--text-primary); line-height: 1.1;
   word-break: break-all;
 }
-.stat-num.pos { color: var(--success); }
-.stat-num.neg { color: var(--danger); }
+.stat-num.pos { color: var(--success); text-shadow: 0 0 12px rgba(107,227,164,0.55); }
+.stat-num.neg { color: var(--danger);  text-shadow: 0 0 12px rgba(255,107,107,0.55); }
 .stat-label { margin-top: 5px; font-size: 9px; font-weight: 600; letter-spacing: 0.06em; text-transform: uppercase; color: var(--text-tertiary); }
 
 /* ===== Form ===== */
@@ -296,8 +296,8 @@ body::after {
   font-size: 18px; font-weight: 800; letter-spacing: -0.02em;
   font-variant-numeric: tabular-nums;
 }
-.day-modal-total.pos { color: var(--success); }
-.day-modal-total.neg { color: var(--danger); }
+.day-modal-total.pos { color: var(--success); text-shadow: 0 0 12px rgba(107,227,164,0.55); }
+.day-modal-total.neg { color: var(--danger);  text-shadow: 0 0 12px rgba(255,107,107,0.55); }
 .day-modal-close {
   width: 30px; height: 30px; border-radius: 50%;
   border: 1px solid rgba(255,255,255,0.10);
@@ -403,7 +403,7 @@ body::after {
   background: linear-gradient(160deg, #FFFFFF 15%, #BAD8FF 55%, #93C5FD 100%);
   -webkit-background-clip: text; background-clip: text;
   -webkit-text-fill-color: transparent; color: transparent;
-  filter: drop-shadow(0 0 14px rgba(147,197,253,0.80)) drop-shadow(0 0 30px rgba(59,130,246,0.55));
+  filter: drop-shadow(0 0 8px rgba(147,197,253,0.35)) drop-shadow(0 0 18px rgba(59,130,246,0.22));
   letter-spacing: -0.01em;
   padding: 4px 4px 16px;
 }
@@ -471,8 +471,8 @@ body::after {
   font-family: var(--font-mono); font-size: 15px; font-weight: 700;
   font-variant-numeric: tabular-nums; margin-left: auto;
 }
-.pnl-pos  { color: var(--success); }
-.pnl-neg  { color: var(--danger); }
+.pnl-pos  { color: var(--success); text-shadow: 0 0 10px rgba(107,227,164,0.50); }
+.pnl-neg  { color: var(--danger);  text-shadow: 0 0 10px rgba(255,107,107,0.50); }
 .pnl-zero { color: var(--text-tertiary); }
 .trade-meta {
   display: flex; gap: 8px; flex-wrap: wrap; align-items: center;
@@ -1024,7 +1024,8 @@ body::after {
 
     const dayEl = document.getElementById('statsDayPnl');
     dayEl.textContent = fmtPnl(dayPnl);
-    dayEl.style.color = dayPnl > 0 ? 'var(--success)' : dayPnl < 0 ? 'var(--danger)' : 'var(--text-primary)';
+    dayEl.style.color      = dayPnl > 0 ? 'var(--success)' : dayPnl < 0 ? 'var(--danger)' : 'var(--text-primary)';
+    dayEl.style.textShadow = dayPnl > 0 ? '0 0 18px rgba(107,227,164,0.55)' : dayPnl < 0 ? '0 0 18px rgba(255,107,107,0.55)' : 'none';
 
     document.getElementById('statsWinRate').textContent = winRate !== null ? winRate + '% win rate' : '— win rate';
     document.getElementById('statsTrades').textContent  = today.length + ' trade' + (today.length !== 1 ? 's' : '') + ' today · ' + trades.length + ' total';
