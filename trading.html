@@ -1038,11 +1038,13 @@ body::after {
     });
 
     // Monthly P&L chart
-    var chartHtml = buildMonthChart(dateKey);
-    if (chartHtml) {
+    var chart = buildMonthChart(dateKey);
+    if (chart) {
       var chartEl = document.createElement('div');
-      chartEl.innerHTML = chartHtml;
-      body.appendChild(chartEl.firstChild);
+      chartEl.innerHTML = chart.html;
+      var chartNode = chartEl.firstChild;
+      body.appendChild(chartNode);
+      chart.setup(chartNode);
     }
 
     document.getElementById('dayModalBg').classList.add('open');
@@ -1065,7 +1067,7 @@ body::after {
         dayPnl[d] = (dayPnl[d] || 0) + (t.pnl || 0);
       }
     });
-    if (!Object.keys(dayPnl).length) return '';
+    if (!Object.keys(dayPnl).length) return null;
 
     var td = new Date();
     var isCurrent = (td.getFullYear() === year && td.getMonth() + 1 === month);
@@ -1076,7 +1078,7 @@ body::after {
       if (dayPnl[d] !== undefined) cumulative += dayPnl[d];
       pts.push({ day: d, cum: cumulative });
     }
-    if (pts.length < 2) return '';
+    if (pts.length < 2) return null;
 
     var W = 440, H = 108, pL = 40, pR = 10, pT = 14, pB = 22;
     var cW = W - pL - pR, cH = H - pT - pB;
@@ -1087,12 +1089,11 @@ body::after {
     minV -= pad; maxV += pad;
     var vR = maxV - minV;
 
-    function xp(day) { return pL + ((day-1)/(maxDay-1||1)) * cW; }
+    function xp(day) { return pL + ((day-1)/(Math.max(1,maxDay-1))) * cW; }
     function yp(v)   { return pT + (1-(v-minV)/vR) * cH; }
 
     var coords = pts.map(function(p){ return {x:xp(p.day),y:yp(p.cum),day:p.day,cum:p.cum}; });
 
-    // Catmull-Rom → cubic bezier smooth path
     var pathD = 'M'+coords[0].x.toFixed(1)+','+coords[0].y.toFixed(1);
     for (var i = 1; i < coords.length; i++) {
       var p0=coords[Math.max(0,i-2)], p1=coords[i-1], p2=coords[i], p3=coords[Math.min(coords.length-1,i+1)];
@@ -1104,66 +1105,108 @@ body::after {
     var lastC = coords[coords.length-1];
     var fillD = pathD+' L'+lastC.x.toFixed(1)+','+(pT+cH)+' L'+pL+','+(pT+cH)+' Z';
     var zeroY = yp(0).toFixed(1);
-
-    // Color based on month total
-    var monthTotal = lastC.cum;
-    var lineClr = monthTotal >= 0 ? '#6BE3A4' : '#FF6B6B';
-    var glowClr = monthTotal >= 0 ? 'rgba(107,227,164,0.7)' : 'rgba(255,107,107,0.7)';
+    var lineClr = lastC.cum >= 0 ? '#6BE3A4' : '#FF6B6B';
     var uid = dateKey.replace(/-/g,'');
 
-    // Clicked day coord
-    var cc = null;
-    coords.forEach(function(c){ if(c.day===clickedDay) cc=c; });
+    var initC = coords[0];
+    coords.forEach(function(c){ if(c.day===clickedDay) initC=c; });
 
-    // Y-axis labels (3 ticks)
-    var yTicks = [minV+vR*0.15, minV+vR*0.5, minV+vR*0.85].map(function(v){
-      var abs=Math.abs(v), lbl=(v<0?'-$':'$')+(abs>=1000?(abs/1000).toFixed(1)+'k':abs.toFixed(0));
-      return '<text x="'+(pL-4).toFixed(0)+'" y="'+(yp(v)+3.5).toFixed(1)+'" text-anchor="end" font-size="7.5" fill="rgba(255,255,255,0.25)" font-family="ui-monospace,monospace">'+lbl+'</text>';
+    var yTicks = [0.15,0.5,0.85].map(function(r){
+      var v=minV+vR*r, abs=Math.abs(v), lbl=(v<0?'-$':'$')+(abs>=1000?(abs/1000).toFixed(1)+'k':abs.toFixed(0));
+      return '<text x="'+(pL-4)+'" y="'+(yp(v)+3.5).toFixed(1)+'" text-anchor="end" font-size="7.5" fill="rgba(255,255,255,0.25)" font-family="ui-monospace,monospace">'+lbl+'</text>';
     }).join('');
 
-    // X-axis labels (4 evenly spaced day numbers)
-    var xStep = Math.max(1, Math.floor(maxDay/4));
-    var xTicks = '';
-    for (var xl = 1; xl <= maxDay; xl += xStep) {
-      xTicks += '<text x="'+xp(xl).toFixed(1)+'" y="'+(pT+cH+13)+'" text-anchor="middle" font-size="7.5" fill="rgba(255,255,255,0.22)" font-family="ui-monospace,monospace">'+xl+'</text>';
-    }
+    var xStep = Math.max(1,Math.floor(maxDay/4)), xTicks='';
+    for (var xl=1; xl<=maxDay; xl+=xStep)
+      xTicks+='<text x="'+xp(xl).toFixed(1)+'" y="'+(pT+cH+13)+'" text-anchor="middle" font-size="7.5" fill="rgba(255,255,255,0.22)" font-family="ui-monospace,monospace">'+xl+'</text>';
 
-    // Tooltip label at clicked point
-    var tooltip = '';
-    if (cc) {
-      var absC=Math.abs(cc.cum), cumLbl=(cc.cum>=0?'+$':'-$')+(absC>=1000?(absC/1000).toFixed(1)+'k':absC.toFixed(0));
-      var tx=cc.x.toFixed(1), ty=(cc.y-10).toFixed(1);
-      tooltip = '<text x="'+tx+'" y="'+ty+'" text-anchor="middle" font-size="8.5" font-weight="700" fill="'+lineClr+'" font-family="ui-monospace,monospace">'+cumLbl+'</text>';
-    }
+    function fmtCum(v){ var a=Math.abs(v); return (v>=0?'+$':'-$')+(a>=1000?(a/1000).toFixed(1)+'k':a.toFixed(0)); }
 
-    return '<div class="dm-chart-wrap">'
+    var html = '<div class="dm-chart-wrap">'
       +'<div class="dm-chart-label">Monthly P&amp;L Curve</div>'
-      +'<svg class="dm-chart-svg" viewBox="0 0 '+W+' '+H+'">'
+      +'<svg class="dm-chart-svg" id="dmSvg'+uid+'" viewBox="0 0 '+W+' '+H+'" style="cursor:crosshair">'
       +'<defs>'
       +'<linearGradient id="dmFill'+uid+'" x1="0" y1="0" x2="0" y2="1">'
       +'<stop offset="0%" stop-color="'+lineClr+'" stop-opacity="0.28"/>'
       +'<stop offset="100%" stop-color="'+lineClr+'" stop-opacity="0.01"/>'
       +'</linearGradient>'
-      +'<filter id="dmGlow'+uid+'" x="-20%" y="-80%" width="140%" height="260%">'
-      +'<feGaussianBlur in="SourceGraphic" stdDeviation="2" result="blur"/>'
-      +'<feMerge><feMergeNode in="blur"/><feMergeNode in="SourceGraphic"/></feMerge>'
+      +'<radialGradient id="dmAmb'+uid+'" cx="0" cy="0.5" r="0.65" fx="0" fy="0.5" gradientUnits="objectBoundingBox">'
+      +'<stop offset="0%" stop-color="'+lineClr+'" stop-opacity="0.20"/>'
+      +'<stop offset="100%" stop-color="'+lineClr+'" stop-opacity="0"/>'
+      +'</radialGradient>'
+      +'<filter id="dmGlow'+uid+'" x="-30%" y="-100%" width="160%" height="300%">'
+      +'<feGaussianBlur in="SourceGraphic" stdDeviation="2.5" result="b"/>'
+      +'<feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge>'
       +'</filter>'
       +'</defs>'
+      // ambient left glow
+      +'<rect x="'+pL+'" y="'+pT+'" width="'+(cW*0.6).toFixed(0)+'" height="'+cH+'" fill="url(#dmAmb'+uid+')" rx="2"/>'
       // zero line
-      +'<line x1="'+pL+'" y1="'+zeroY+'" x2="'+(W-pR)+'" y2="'+zeroY+'" stroke="rgba(255,255,255,0.07)" stroke-width="0.5"/>'
-      // fill
+      +'<line x1="'+pL+'" y1="'+zeroY+'" x2="'+(W-pR)+'" y2="'+zeroY+'" stroke="rgba(255,255,255,0.08)" stroke-width="0.5"/>'
+      // fill + line
       +'<path d="'+fillD+'" fill="url(#dmFill'+uid+')"/>'
-      // line
-      +'<path d="'+pathD+'" fill="none" stroke="'+lineClr+'" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" filter="url(#dmGlow'+uid+')"/>'
-      // clicked day vertical
-      +(cc?'<line x1="'+cc.x.toFixed(1)+'" y1="'+pT+'" x2="'+cc.x.toFixed(1)+'" y2="'+(pT+cH)+'" stroke="rgba(255,255,255,0.14)" stroke-width="0.8" stroke-dasharray="3,2"/>':'')
-      // dot outer ring + inner dot
-      +(cc?'<circle cx="'+cc.x.toFixed(1)+'" cy="'+cc.y.toFixed(1)+'" r="4" fill="'+lineClr+'" opacity="0.35" filter="url(#dmGlow'+uid+')"/>':'')
-      +(cc?'<circle cx="'+cc.x.toFixed(1)+'" cy="'+cc.y.toFixed(1)+'" r="2.8" fill="'+lineClr+'" filter="url(#dmGlow'+uid+')"/>':'')
-      +(cc?'<circle cx="'+cc.x.toFixed(1)+'" cy="'+cc.y.toFixed(1)+'" r="1.4" fill="#fff"/>':'')
-      // labels
-      +yTicks+xTicks+tooltip
+      +'<path d="'+pathD+'" fill="none" stroke="'+lineClr+'" stroke-width="1.8" stroke-linecap="round" filter="url(#dmGlow'+uid+')"/>'
+      // y/x labels
+      +yTicks+xTicks
+      // interactive hover group (starts at clicked day)
+      +'<g id="dmHG'+uid+'">'
+      +'<line id="dmHL'+uid+'" x1="'+initC.x.toFixed(1)+'" y1="'+pT+'" x2="'+initC.x.toFixed(1)+'" y2="'+(pT+cH)+'" stroke="rgba(255,255,255,0.20)" stroke-width="0.8" stroke-dasharray="3,2"/>'
+      +'<circle id="dmDO'+uid+'" cx="'+initC.x.toFixed(1)+'" cy="'+initC.y.toFixed(1)+'" r="5" fill="'+lineClr+'" opacity="0.28" filter="url(#dmGlow'+uid+')"/>'
+      +'<circle id="dmD'+uid+'" cx="'+initC.x.toFixed(1)+'" cy="'+initC.y.toFixed(1)+'" r="2.8" fill="'+lineClr+'" filter="url(#dmGlow'+uid+')"/>'
+      +'<circle id="dmDI'+uid+'" cx="'+initC.x.toFixed(1)+'" cy="'+initC.y.toFixed(1)+'" r="1.4" fill="#fff"/>'
+      +'<text id="dmTip'+uid+'" x="'+initC.x.toFixed(1)+'" y="'+(initC.y-10).toFixed(1)+'" text-anchor="middle" font-size="9" font-weight="700" fill="'+lineClr+'" font-family="ui-monospace,monospace">'+fmtCum(initC.cum)+'</text>'
+      +'</g>'
       +'</svg></div>';
+
+    function setup(container) {
+      var svg = document.getElementById('dmSvg'+uid);
+      if (!svg) return;
+      var hL=document.getElementById('dmHL'+uid), dO=document.getElementById('dmDO'+uid),
+          dot=document.getElementById('dmD'+uid), dI=document.getElementById('dmDI'+uid),
+          tip=document.getElementById('dmTip'+uid);
+
+      var anim = { x:initC.x, y:initC.y, tx:initC.x, ty:initC.y, raf:null };
+
+      function draw() {
+        var x=anim.x.toFixed(2), y=anim.y.toFixed(2);
+        hL.setAttribute('x1',x); hL.setAttribute('x2',x);
+        dO.setAttribute('cx',x); dO.setAttribute('cy',y);
+        dot.setAttribute('cx',x); dot.setAttribute('cy',y);
+        dI.setAttribute('cx',x); dI.setAttribute('cy',y);
+        tip.setAttribute('x',x); tip.setAttribute('y',(anim.y-10).toFixed(2));
+      }
+
+      function step() {
+        var dx=anim.tx-anim.x, dy=anim.ty-anim.y;
+        if (Math.abs(dx)>0.08 || Math.abs(dy)>0.08) {
+          anim.x+=dx*0.22; anim.y+=dy*0.22;
+          draw();
+          anim.raf=requestAnimationFrame(step);
+        } else {
+          anim.x=anim.tx; anim.y=anim.ty; draw(); anim.raf=null;
+        }
+      }
+
+      function nearest(clientX) {
+        var rect=svg.getBoundingClientRect();
+        var svgX=((clientX-rect.left)/rect.width)*W;
+        var best=coords[0], bd=Infinity;
+        coords.forEach(function(c){ var d=Math.abs(c.x-svgX); if(d<bd){bd=d;best=c;} });
+        return best;
+      }
+
+      function onMove(clientX) {
+        var c=nearest(clientX);
+        anim.tx=c.x; anim.ty=c.y;
+        tip.textContent=fmtCum(c.cum);
+        if (!anim.raf) anim.raf=requestAnimationFrame(step);
+      }
+
+      svg.addEventListener('mousemove', function(e){ onMove(e.clientX); });
+      svg.addEventListener('touchmove', function(e){ e.preventDefault(); onMove(e.touches[0].clientX); },{passive:false});
+    }
+
+    return { html: html, setup: setup };
   }
 
   // ── Stats ────────────────────────────────────────────────────────────────
