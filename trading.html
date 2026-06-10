@@ -188,6 +188,13 @@ body::after {
   -webkit-text-fill-color: transparent;
   filter: drop-shadow(0 0 10px rgba(96,165,250,0.45));
 }
+.cal-month-pnl {
+  font-size: 11px; font-weight: 700;
+  font-variant-numeric: tabular-nums; letter-spacing: -0.01em;
+}
+.cal-month-pnl.pos { color: var(--success); text-shadow: 0 0 10px rgba(107,227,164,0.60); }
+.cal-month-pnl.neg { color: var(--danger);  text-shadow: 0 0 10px rgba(255,107,107,0.60); }
+.cal-month-pnl.zero { color: var(--text-tertiary); }
 .cal-nav-btn {
   width: 36px; height: 36px;
   display: flex; align-items: center; justify-content: center;
@@ -769,7 +776,10 @@ body::after {
     <div class="gm-card">
       <div class="cal-nav">
         <button class="cal-nav-btn" id="calPrev">&#8592;</button>
-        <span class="cal-month-label" id="calMonthLabel"></span>
+        <div style="display:flex;flex-direction:column;align-items:center;gap:3px">
+          <span class="cal-month-label" id="calMonthLabel"></span>
+          <span class="cal-month-pnl" id="calMonthPnl"></span>
+        </div>
         <button class="cal-nav-btn" id="calNext">&#8594;</button>
       </div>
       <div class="cal-grid" id="calGrid"></div>
@@ -879,6 +889,25 @@ body::after {
     var gridEl  = document.getElementById('calGrid');
     if (!labelEl || !gridEl) return;
     labelEl.textContent = _MONTH_NAMES[_calMonth] + ' ' + _calYear;
+
+    // Month total P&L
+    var monthPrefix = _calYear + '-' + String(_calMonth+1).padStart(2,'0') + '-';
+    var monthTotal = 0;
+    var monthHasTrades = false;
+    Object.keys(dayMap).forEach(function(k) {
+      if (k.indexOf(monthPrefix) === 0) { monthTotal += dayMap[k]; monthHasTrades = true; }
+    });
+    var pnlEl = document.getElementById('calMonthPnl');
+    if (pnlEl) {
+      if (monthHasTrades) {
+        var sign = monthTotal >= 0 ? '+' : '';
+        pnlEl.textContent = sign + fmtPnl(monthTotal);
+        pnlEl.className = 'cal-month-pnl ' + (monthTotal > 0 ? 'pos' : monthTotal < 0 ? 'neg' : 'zero');
+      } else {
+        pnlEl.textContent = '';
+        pnlEl.className = 'cal-month-pnl';
+      }
+    }
 
     var td = new Date();
     var todayKey = td.getFullYear() + '-' + String(td.getMonth()+1).padStart(2,'0') + '-' + String(td.getDate()).padStart(2,'0');
