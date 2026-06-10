@@ -900,8 +900,7 @@ body::after {
     var pnlEl = document.getElementById('calMonthPnl');
     if (pnlEl) {
       if (monthHasTrades) {
-        var sign = monthTotal >= 0 ? '+' : '';
-        pnlEl.textContent = sign + fmtPnl(monthTotal);
+        pnlEl.textContent = fmtPnl(monthTotal);
         pnlEl.className = 'cal-month-pnl ' + (monthTotal > 0 ? 'pos' : monthTotal < 0 ? 'neg' : 'zero');
       } else {
         pnlEl.textContent = '';
