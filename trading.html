@@ -977,6 +977,24 @@ body::after {
     // Build trade cards (reuse existing markup style)
     var body = document.getElementById('dmBody');
     body.innerHTML = '';
+
+    // Motivational message — top of modal so always visible
+    var motivMsgs = [
+      { min:  2000, max:  Infinity, text: "Exceptional session. Protect those gains and stay locked in." },
+      { min:   500, max:  2000,     text: "Strong execution today. Keep that discipline going." },
+      { min:     1, max:   500,     text: "Every green day builds the foundation. Stay consistent." },
+      { min:     0, max:     1,     text: "Flat days sharpen discipline. The edge is still there." },
+      { min:  -499, max:     0,     text: "Small setback. Reset, review, and come back sharper." },
+      { min: -1999, max:  -499,     text: "Take the lesson, leave the rest. Tomorrow is a fresh start." },
+      { min: -Infinity, max: -1999, text: "The best traders lose too. Review it, learn it, move forward." }
+    ];
+    var motivMatch = motivMsgs.find(function(m){ return dayTotal >= m.min && dayTotal < m.max; }) || motivMsgs[motivMsgs.length - 1];
+    var isGreen = dayTotal >= 0;
+    var motiv = document.createElement('p');
+    motiv.textContent = motivMatch.text;
+    motiv.style.cssText = 'margin:0 0 14px;text-align:center;font-size:12.5px;font-weight:600;font-style:italic;letter-spacing:0.02em;color:' + (isGreen ? 'rgba(107,227,164,0.85)' : 'rgba(255,107,107,0.75)') + ';text-shadow:0 0 14px ' + (isGreen ? 'rgba(107,227,164,0.55)' : 'rgba(255,107,107,0.50)') + ';line-height:1.5;';
+    body.appendChild(motiv);
+
     var sorted = trades.slice().sort(function (a,b) { return (b.time||'').localeCompare(a.time||''); });
     sorted.forEach(function (trade) {
       var pnl    = trade.pnl || 0;
